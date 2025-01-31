@@ -19,6 +19,7 @@ public class FishingBobController : MonoBehaviour
     private bool isThrown = false;
     private Vector3 targetPosition;
     private List<Vector3> previousPositions = new List<Vector3>();
+    private List<Vector3> previousRotations = new List<Vector3>(); // To track rotational movement
     private float timeTracking = 0f;
     private Rigidbody bobRigidbody;
 
@@ -32,6 +33,7 @@ public class FishingBobController : MonoBehaviour
             bobRigidbody = fishingBob.gameObject.AddComponent<Rigidbody>();
         }
         bobRigidbody.useGravity = false;
+        bobRigidbody.maxAngularVelocity = 100f; // Increase max angular velocity for proper spinning
     }
 
     void Update()
@@ -44,6 +46,7 @@ public class FishingBobController : MonoBehaviour
                 isHoldingBob = true;
                 bobRigidbody.isKinematic = true;
                 previousPositions.Clear();
+                previousRotations.Clear();
                 timeTracking = 0f;
             }
         }
@@ -99,12 +102,15 @@ public class FishingBobController : MonoBehaviour
         if (previousPositions.Count > 10)
         {
             previousPositions.RemoveAt(0);
+            previousRotations.RemoveAt(0);
         }
         previousPositions.Add(fishingBob.position);
+        previousRotations.Add(fishingBob.eulerAngles); // Track rotational movement
         timeTracking += Time.deltaTime;
         if (timeTracking > maxFrameTrackingTime)
         {
             previousPositions.RemoveAt(0);
+            previousRotations.RemoveAt(0);
         }
     }
 
@@ -115,17 +121,31 @@ public class FishingBobController : MonoBehaviour
         return totalDisplacement.magnitude / timeTracking;
     }
 
+    private Vector3 CalculateAngularMomentum()
+    {
+        if (previousRotations.Count < 2) return Vector3.zero;
+        Vector3 totalRotation = previousRotations[previousRotations.Count - 1] - previousRotations[0];
+
+        // Convert from Euler angles to an approximate angular velocity
+        return totalRotation / timeTracking;
+    }
+
     private void ThrowBob()
     {
         bobRigidbody.isKinematic = false;
         bobRigidbody.useGravity = true;
 
-        Vector3 throwDirection = (previousPositions[previousPositions.Count - 1] - previousPositions[0]).normalized;
+        Vector3 throwDirection = previousPositions[previousPositions.Count - 1] - previousPositions[0];
 
         // Rotate throw direction by 45 degrees upward on the X-Z plane
         throwDirection = Quaternion.AngleAxis(-45, Vector3.right) * throwDirection;
 
         bobRigidbody.linearVelocity = throwDirection * throwForceMultiplier;
+
+        // Apply saved angular momentum
+        Vector3 angularVelocity = CalculateAngularMomentum();
+        bobRigidbody.angularVelocity = angularVelocity;
+
         Invoke(nameof(ReturnBob), returnTime);
     }
 }

@@ -9,6 +9,7 @@ public class FishingZoneScript : MonoBehaviour
 
     private float zoneWidth;
     private float zoneHeight;
+    public FishUI fishUI;
 
     void Start()
     {
@@ -48,5 +49,6 @@ public class FishingZoneScript : MonoBehaviour
     public void OnFishCaught(GameObject fish)
     {
         Destroy(fish);
+        fishUI.UpdateFish();
     }
 }

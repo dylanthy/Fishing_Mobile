@@ -4,7 +4,6 @@ using System.Collections.Generic;
 public class FishingBobController : MonoBehaviour
 {
     public Camera mainCamera;
-    public Transform fishingBob;
     public Transform targetArea;
     public LayerMask targetLayer;
     public float lerpSpeed = 10f;
@@ -12,9 +11,10 @@ public class FishingBobController : MonoBehaviour
     public float throwForceMultiplier = 5f;
     public float maxFrameTrackingTime = 0.2f;
     public float returnTime = 2f;
+    public float angle = -90f;
 
     private Vector3 bobStart;
-    private bool isHoldable = false;
+    private bool isHoldable = true;
     private bool isHoldingBob = false;
     private bool isThrown = false;
     private Vector3 targetPosition;
@@ -23,25 +23,36 @@ public class FishingBobController : MonoBehaviour
     private float timeTracking = 0f;
     private Rigidbody bobRigidbody;
 
+    public FishUI fishUI;
+
+    private int ballCounter = 3;
+
     void Start()
     {
-        bobStart = fishingBob.position;
+        bobStart = transform.position;  // FishingBob is now the primary object
         targetPosition = bobStart;
-        bobRigidbody = fishingBob.GetComponent<Rigidbody>();
+        bobRigidbody = GetComponent<Rigidbody>();
+
         if (bobRigidbody == null)
         {
-            bobRigidbody = fishingBob.gameObject.AddComponent<Rigidbody>();
+            bobRigidbody = gameObject.AddComponent<Rigidbody>();
         }
         bobRigidbody.useGravity = false;
-        bobRigidbody.maxAngularVelocity = 100f; // Increase max angular velocity for proper spinning
+        bobRigidbody.maxAngularVelocity = 100f;
     }
 
     void Update()
     {
+        if (Input.GetButtonDown("Reload"))
+        {
+            ballCounter++;
+            fishUI.UpdateBall(ballCounter);
+        }
+
         if (Input.GetMouseButtonDown(0) && isHoldable)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit) && hit.transform == fishingBob)
+            if (Physics.Raycast(ray, out RaycastHit hit) && hit.transform == transform) // Check if we hit this object
             {
                 isHoldingBob = true;
                 bobRigidbody.isKinematic = true;
@@ -51,7 +62,7 @@ public class FishingBobController : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && isHoldingBob)
         {
             isHoldingBob = false;
             if (CalculateMomentum() > throwThreshold)
@@ -73,7 +84,7 @@ public class FishingBobController : MonoBehaviour
         }
 
         if (!isThrown)
-            fishingBob.position = Vector3.Lerp(fishingBob.position, targetPosition, Time.deltaTime * lerpSpeed);
+            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * lerpSpeed);
     }
 
     void MoveBobToCursor()
@@ -90,7 +101,7 @@ public class FishingBobController : MonoBehaviour
 
     private void ReturnBob()
     {
-        fishingBob.position = bobStart;
+        transform.position = bobStart;
         targetPosition = bobStart;
         bobRigidbody.isKinematic = true;
         isThrown = false;
@@ -104,9 +115,10 @@ public class FishingBobController : MonoBehaviour
             previousPositions.RemoveAt(0);
             previousRotations.RemoveAt(0);
         }
-        previousPositions.Add(fishingBob.position);
-        previousRotations.Add(fishingBob.eulerAngles); // Track rotational movement
+        previousPositions.Add(transform.position);
+        previousRotations.Add(transform.eulerAngles);
         timeTracking += Time.deltaTime;
+
         if (timeTracking > maxFrameTrackingTime)
         {
             previousPositions.RemoveAt(0);
@@ -132,19 +144,31 @@ public class FishingBobController : MonoBehaviour
 
     private void ThrowBob()
     {
+        ballCounter--;
+        fishUI.UpdateBall(ballCounter);
         bobRigidbody.isKinematic = false;
         bobRigidbody.useGravity = true;
 
-        Vector3 throwDirection = previousPositions[previousPositions.Count - 1] - previousPositions[0];
+        if (previousPositions.Count < 2) return;
 
-        // Rotate throw direction by 45 degrees upward on the X-Z plane
-        throwDirection = Quaternion.AngleAxis(-45, Vector3.right) * throwDirection;
+        Vector3 totalDisplacement = Vector3.zero;
+        float totalTime = 0f;
 
-        bobRigidbody.linearVelocity = throwDirection * throwForceMultiplier;
+        int frameCount = Mathf.Min(10, previousPositions.Count - 1);
 
-        // Apply saved angular momentum
-        Vector3 angularVelocity = CalculateAngularMomentum();
-        bobRigidbody.angularVelocity = angularVelocity;
+        for (int i = 0; i < frameCount; i++)
+        {
+            totalDisplacement += previousPositions[i + 1] - previousPositions[i];
+            totalTime += Time.deltaTime;
+        }
+
+        Vector3 averageVelocity = (totalTime > 0) ? (totalDisplacement / totalTime) : Vector3.zero;
+
+        Vector3 throwDirection = averageVelocity.normalized;
+        throwDirection = Quaternion.AngleAxis(-20, Vector3.right) * throwDirection;
+
+        bobRigidbody.linearVelocity = throwDirection * averageVelocity.magnitude;
+        bobRigidbody.angularVelocity = CalculateAngularMomentum();
 
         Invoke(nameof(ReturnBob), returnTime);
     }

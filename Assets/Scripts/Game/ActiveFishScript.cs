@@ -4,7 +4,7 @@ public class ActiveFishScript : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<FishingBobController>() != null) // Checks if it's the fishing bob
+        if (other.CompareTag("FishingBob")) // Checks if it's the fishing bob
         {
             FishingZoneScript fishingZone = GetComponentInParent<FishingZoneScript>();
             if (fishingZone != null)

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2194724156477695821}
   - component: {fileID: 4646425948511791864}
   - component: {fileID: 786734136082673451}
-  - component: {fileID: 9204945124222263399}
+  - component: {fileID: 4016693415443397668}
   m_Layer: 0
   m_Name: ActiveFish
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1638009627495901940}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.22, y: 0.002, z: -14.632}
+  m_LocalPosition: {x: 0, y: 0.002, z: 0}
   m_LocalScale: {x: 0.07, y: 1, z: 0.07}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -100,8 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34688d2708ff1074ead098fd2be07be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!64 &9204945124222263399
-MeshCollider:
+--- !u!65 &4016693415443397668
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -115,10 +115,9 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+  serializedVersion: 3
+  m_Size: {x: 10.000001, y: 0.001, z: 10.000001}
+  m_Center: {x: 0, y: 0, z: 0}

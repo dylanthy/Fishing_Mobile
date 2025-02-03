@@ -3,29 +3,39 @@ using UnityEngine;
 
 public class CameraRotation : MonoBehaviour
 {
-    public float rotationSpeed = 2f; // Speed of rotation
-    public float cooldownTime = 2f; // Cooldown after rotation
-    public float rotationXForward = 10f; // X rotation when facing forward
-    public float rotationXRight = 15f; // X rotation when facing right
-    public float rotationXBackward = 5f; // X rotation when facing backward
-    public float rotationXLeft = 20f; // X rotation when facing left
+    public float rotationDuration = 0.5f; // Time in seconds for a full rotation
+    public float rotationXForward = 10f;
+    public float rotationXRight = 15f;
+    public float rotationXBackward = 5f;
+    public float rotationXLeft = 20f;
 
-    private bool isRotating = false;
     private Quaternion targetRotation;
-    private float targetXRotation;
+    private Coroutine rotationCoroutine;
+    private bool isRotating = false;
+    private float queuedRotation = 0;
 
     void Update()
     {
         if (!isRotating)
         {
-            if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.D) || Input.GetKey(KeyCode.D))
             {
                 RotateCamera(90);
             }
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (Input.GetKeyDown(KeyCode.A) || Input.GetKey(KeyCode.A))
             {
                 RotateCamera(-90);
             }
+        }
+        else
+        {
+            // Queue the next turn if the user is still holding a key
+            if (Input.GetKey(KeyCode.D))
+                queuedRotation = 90;
+            else if (Input.GetKey(KeyCode.A))
+                queuedRotation = -90;
+            else
+                queuedRotation = 0; // Reset if no key is held
         }
     }
 
@@ -36,7 +46,13 @@ public class CameraRotation : MonoBehaviour
         isRotating = true;
         float newYRotation = transform.eulerAngles.y + angle;
         targetRotation = Quaternion.Euler(GetXRotation(newYRotation), newYRotation, 0);
-        StartCoroutine(RotateOverTime());
+
+        if (rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+        }
+
+        rotationCoroutine = StartCoroutine(RotateOverTime());
     }
 
     IEnumerator RotateOverTime()
@@ -44,22 +60,25 @@ public class CameraRotation : MonoBehaviour
         float elapsedTime = 0;
         Quaternion startRotation = transform.rotation;
 
-        while (elapsedTime < 1f)
+        while (elapsedTime < rotationDuration)
         {
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsedTime * rotationSpeed);
+            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsedTime / rotationDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         transform.rotation = targetRotation;
-        yield return new WaitForSeconds(cooldownTime); // Start cooldown only after rotation finishes
-
         isRotating = false;
+
+        // If there's a queued rotation, start it immediately
+        if (queuedRotation != 0)
+        {
+            RotateCamera(queuedRotation);
+        }
     }
 
     float GetXRotation(float yRotation)
     {
-        // Normalize rotation between 0-360 degrees
         yRotation = (yRotation + 360) % 360;
 
         if (Mathf.Approximately(yRotation, 0)) return rotationXForward;  // Facing forward
@@ -67,6 +86,6 @@ public class CameraRotation : MonoBehaviour
         if (Mathf.Approximately(yRotation, 180)) return rotationXBackward; // Facing backward
         if (Mathf.Approximately(yRotation, 270)) return rotationXLeft;   // Facing left
 
-        return transform.eulerAngles.x; // Default (shouldn't happen)
+        return transform.eulerAngles.x;
     }
 }

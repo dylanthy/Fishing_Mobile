@@ -27,6 +27,12 @@ public class FishingBobController : MonoBehaviour
 
     private int ballCounter = 3;
 
+    public float throwAngleForward = -20f;
+    public float throwAngleRight = -10f;
+    public float throwAngleBackward = -30f;
+    public float throwAngleLeft = -15f;
+
+
     void Start()
     {
         bobStart = transform.position;  // FishingBob is now the primary object
@@ -163,13 +169,37 @@ public class FishingBobController : MonoBehaviour
         }
 
         Vector3 averageVelocity = (totalTime > 0) ? (totalDisplacement / totalTime) : Vector3.zero;
-
         Vector3 throwDirection = averageVelocity.normalized;
-        throwDirection = Quaternion.AngleAxis(-20, Vector3.right) * throwDirection;
+
+        // Get current Y rotation to determine direction
+        float playerYRotation = (mainCamera.transform.eulerAngles.y + 360) % 360;
+
+        // Determine the player's "right" direction dynamically
+        Vector3 rotationAxis = mainCamera.transform.right; 
+
+        // Apply direction-based throw angle adjustment using the player's right direction
+        if (Mathf.Approximately(playerYRotation, 0)) // Facing Forward
+        {
+            throwDirection = Quaternion.AngleAxis(throwAngleForward, rotationAxis) * throwDirection;
+        }
+        else if (Mathf.Approximately(playerYRotation, 90)) // Facing Right
+        {
+            throwDirection = Quaternion.AngleAxis(throwAngleRight, rotationAxis) * throwDirection;
+        }
+        else if (Mathf.Approximately(playerYRotation, 180)) // Facing Backward
+        {
+            throwDirection = Quaternion.AngleAxis(throwAngleBackward, rotationAxis) * throwDirection;
+        }
+        else if (Mathf.Approximately(playerYRotation, 270)) // Facing Left
+        {
+            throwDirection = Quaternion.AngleAxis(throwAngleLeft, rotationAxis) * throwDirection;
+        }
 
         bobRigidbody.linearVelocity = throwDirection * averageVelocity.magnitude;
         bobRigidbody.angularVelocity = CalculateAngularMomentum();
-
+        Debug.Log("Bob Thrown");
         Invoke(nameof(ReturnBob), returnTime);
     }
+
+
 }

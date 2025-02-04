@@ -38,7 +38,7 @@ public class FishingZoneScript : MonoBehaviour
 
         Vector3 spawnPosition = new Vector3(
             Random.Range(fishingZone.position.x - zoneWidth, fishingZone.position.x + zoneWidth),
-            fishingZone.position.y + 0.1f,
+            fishingZone.position.y + 0.3f,
             Random.Range(fishingZone.position.z - zoneHeight, fishingZone.position.z + zoneHeight)
         );
 

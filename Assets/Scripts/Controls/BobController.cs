@@ -11,7 +11,6 @@ public class FishingBobController : MonoBehaviour
     public float throwForceMultiplier = 5f;
     public float maxFrameTrackingTime = 0.2f;
     public float returnTime = 2f;
-    public float angle = -90f;
 
     private Vector3 bobStart;
     private bool isHoldable = true;
@@ -24,18 +23,16 @@ public class FishingBobController : MonoBehaviour
     private Rigidbody bobRigidbody;
 
     public FishUI fishUI;
-
     private int ballCounter = 3;
 
-    public float throwAngleForward = -20f;
-    public float throwAngleRight = -10f;
-    public float throwAngleBackward = -30f;
-    public float throwAngleLeft = -15f;
-
+    public Vector2 throwAngleForward = new Vector2(-30f, -10f);
+    public Vector2 throwAngleRight = new Vector2(-20f, 0f);
+    public Vector2 throwAngleBackward = new Vector2(-40f, -20f);
+    public Vector2 throwAngleLeft = new Vector2(-25f, -5f);
 
     void Start()
     {
-        bobStart = transform.position;  // FishingBob is now the primary object
+        bobStart = transform.position;
         targetPosition = bobStart;
         bobRigidbody = GetComponent<Rigidbody>();
 
@@ -58,7 +55,7 @@ public class FishingBobController : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && isHoldable)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit) && hit.transform == transform) // Check if we hit this object
+            if (Physics.Raycast(ray, out RaycastHit hit) && hit.transform == transform)
             {
                 isHoldingBob = true;
                 bobRigidbody.isKinematic = true;
@@ -139,15 +136,6 @@ public class FishingBobController : MonoBehaviour
         return totalDisplacement.magnitude / timeTracking;
     }
 
-    private Vector3 CalculateAngularMomentum()
-    {
-        if (previousRotations.Count < 2) return Vector3.zero;
-        Vector3 totalRotation = previousRotations[previousRotations.Count - 1] - previousRotations[0];
-
-        // Convert from Euler angles to an approximate angular velocity
-        return totalRotation / timeTracking;
-    }
-
     private void ThrowBob()
     {
         ballCounter--;
@@ -157,49 +145,36 @@ public class FishingBobController : MonoBehaviour
 
         if (previousPositions.Count < 2) return;
 
-        Vector3 totalDisplacement = Vector3.zero;
-        float totalTime = 0f;
+        Vector3 totalDisplacement = previousPositions[previousPositions.Count - 1] - previousPositions[0];
+        float velocityMagnitude = totalDisplacement.magnitude / timeTracking;
+        Vector3 throwDirection = totalDisplacement.normalized;
 
-        int frameCount = Mathf.Min(10, previousPositions.Count - 1);
-
-        for (int i = 0; i < frameCount; i++)
-        {
-            totalDisplacement += previousPositions[i + 1] - previousPositions[i];
-            totalTime += Time.deltaTime;
-        }
-
-        Vector3 averageVelocity = (totalTime > 0) ? (totalDisplacement / totalTime) : Vector3.zero;
-        Vector3 throwDirection = averageVelocity.normalized;
-
-        // Get current Y rotation to determine direction
         float playerYRotation = (mainCamera.transform.eulerAngles.y + 360) % 360;
+        Vector3 rotationAxis = mainCamera.transform.right;
 
-        // Determine the player's "right" direction dynamically
-        Vector3 rotationAxis = mainCamera.transform.right; 
-
-        // Apply direction-based throw angle adjustment using the player's right direction
-        if (Mathf.Approximately(playerYRotation, 0)) // Facing Forward
+        float angle = 0f;
+        if (playerYRotation < 45 || playerYRotation > 315)
         {
-            throwDirection = Quaternion.AngleAxis(throwAngleForward, rotationAxis) * throwDirection;
+            angle = Mathf.Lerp(throwAngleForward.x, throwAngleForward.y, velocityMagnitude / throwForceMultiplier);
         }
-        else if (Mathf.Approximately(playerYRotation, 90)) // Facing Right
+        else if (playerYRotation >= 45 && playerYRotation < 135)
         {
-            throwDirection = Quaternion.AngleAxis(throwAngleRight, rotationAxis) * throwDirection;
+            angle = Mathf.Lerp(throwAngleRight.x, throwAngleRight.y, velocityMagnitude / throwForceMultiplier);
         }
-        else if (Mathf.Approximately(playerYRotation, 180)) // Facing Backward
+        else if (playerYRotation >= 135 && playerYRotation < 225)
         {
-            throwDirection = Quaternion.AngleAxis(throwAngleBackward, rotationAxis) * throwDirection;
+            angle = Mathf.Lerp(throwAngleBackward.x, throwAngleBackward.y, velocityMagnitude / throwForceMultiplier);
         }
-        else if (Mathf.Approximately(playerYRotation, 270)) // Facing Left
+        else if (playerYRotation >= 225 && playerYRotation < 315)
         {
-            throwDirection = Quaternion.AngleAxis(throwAngleLeft, rotationAxis) * throwDirection;
+            angle = Mathf.Lerp(throwAngleLeft.x, throwAngleLeft.y, velocityMagnitude / throwForceMultiplier);
         }
 
-        bobRigidbody.linearVelocity = throwDirection * averageVelocity.magnitude;
-        bobRigidbody.angularVelocity = CalculateAngularMomentum();
-        Debug.Log("Bob Thrown");
+        throwDirection = Quaternion.AngleAxis(angle, rotationAxis) * throwDirection;
+        bobRigidbody.linearVelocity = throwDirection * velocityMagnitude * throwForceMultiplier;
+
+
+        Debug.Log($"Bob Thrown at angle: {angle}");
         Invoke(nameof(ReturnBob), returnTime);
     }
-
-
 }

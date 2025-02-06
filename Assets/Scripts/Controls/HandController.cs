@@ -15,7 +15,6 @@ public class HandController : MonoBehaviour
             GameObject throwable = Instantiate(item, leftHandPoint);
             throwable.GetComponent<ThrowableController>().Init(false, leftHandPoint);
             lHandFull = true;
-            Debug.Log($"Current Bools, L:{lHandFull}, R:{rHandFull}");
             return;
         }
         if(!rHandFull)
@@ -23,7 +22,6 @@ public class HandController : MonoBehaviour
             GameObject throwable = Instantiate(item, rightHandPoint);
             throwable.GetComponent<ThrowableController>().Init(true, rightHandPoint);
             rHandFull = true;
-            Debug.Log($"Current Bools, L:{lHandFull}, R:{rHandFull}");
         }
     }
 

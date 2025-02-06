@@ -8,7 +8,7 @@ public class ItemSpawners : MonoBehaviour
     void Start()
     {
         handController = FindFirstObjectByType<HandController>();
-        mainCamera = FindFirstObjectByType<Camera>();
+        mainCamera = Camera.main;
     }
 
     // Update is called once per frame

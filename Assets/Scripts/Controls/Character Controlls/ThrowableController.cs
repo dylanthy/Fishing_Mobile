@@ -6,15 +6,12 @@ public class ThrowableController : MonoBehaviour
 {
     public LayerMask targetLayer;
     public float lerpSpeed = 10f;
-    public float throwThreshold = 2.0f;
+    public float throwThreshold = .03f;
     public float throwForceMultiplier = 5f;
     public float maxFrameTrackingTime = 0.2f;
     public float returnTime = 2f;
     public FishUI fishUI;
-    public Vector2 throwAngleForward = new Vector2(-30f, -10f);
-    public Vector2 throwAngleRight = new Vector2(-20f, 0f);
-    public Vector2 throwAngleBackward = new Vector2(-40f, -20f);
-    public Vector2 throwAngleLeft = new Vector2(-25f, -5f);
+    public Vector2 throwAngle = new Vector2(20f, 50f);
 
     private Vector3 startingPosition;
     private Quaternion startingRotation;
@@ -147,9 +144,8 @@ public class ThrowableController : MonoBehaviour
         float velocityMagnitude = totalDisplacement.magnitude / timeTracking;
         Vector3 throwDirection = totalDisplacement.normalized;
 
-        float playerYRotation = (mainCamera.transform.eulerAngles.y + 360) % 360;
         Vector3 rotationAxis = mainCamera.transform.right;
-        float angle = GetThrowAngle(playerYRotation, velocityMagnitude);
+        float angle = GetThrowAngle(velocityMagnitude);
         throwDirection = Quaternion.AngleAxis(angle, rotationAxis) * throwDirection;
 
         bobRigidbody.linearVelocity = throwDirection * velocityMagnitude * throwForceMultiplier;
@@ -159,11 +155,8 @@ public class ThrowableController : MonoBehaviour
         Invoke(nameof(DestroyThrowable), returnTime);
     }
 
-    float GetThrowAngle(float yRotation, float velocityMagnitude)
+    float GetThrowAngle(float velocityMagnitude)
     {
-        if (yRotation < 45 || yRotation > 315) return Mathf.Lerp(throwAngleForward.x, throwAngleForward.y, velocityMagnitude / throwForceMultiplier);
-        if (yRotation >= 45 && yRotation < 135) return Mathf.Lerp(throwAngleRight.x, throwAngleRight.y, velocityMagnitude / throwForceMultiplier);
-        if (yRotation >= 135 && yRotation < 225) return Mathf.Lerp(throwAngleBackward.x, throwAngleBackward.y, velocityMagnitude / throwForceMultiplier);
-        return Mathf.Lerp(throwAngleLeft.x, throwAngleLeft.y, velocityMagnitude / throwForceMultiplier);
+        return Mathf.Lerp(throwAngle.x, throwAngle.y, velocityMagnitude / throwForceMultiplier);
     }
 }

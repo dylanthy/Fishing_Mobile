@@ -29,11 +29,14 @@ public class ThrowableController : MonoBehaviour
     private Transform targetArea;
     private HandController handController;
 
-    private bool myHand; //LEFT = 0, RIGHT = 1
+    private bool myHand; //LEFT = false, RIGHT = true
 
-    void Init(bool hand) //LEFT = 0, RIGHT = 1
+    private Transform  handLocation;
+    public void Init(bool hand, Transform location) //LEFT = false, RIGHT = true
     {
         myHand = hand;
+        handLocation = location;
+
     }
 
     void Start()
@@ -83,7 +86,7 @@ public class ThrowableController : MonoBehaviour
 
         if (!isThrown)
         {
-            transform.position = Vector3.Lerp(transform.position, startingPosition, Time.deltaTime * lerpSpeed);
+            transform.position = Vector3.Lerp(transform.position, handLocation.position, Time.deltaTime * lerpSpeed);
         }
     }
 
@@ -151,8 +154,9 @@ public class ThrowableController : MonoBehaviour
 
         bobRigidbody.linearVelocity = throwDirection * velocityMagnitude * throwForceMultiplier;
         isThrown = true;
+        Debug.Log($"Resetting Hand {myHand}");
+        handController.ResetHand(myHand);
         Invoke(nameof(DestroyThrowable), returnTime);
-
     }
 
     float GetThrowAngle(float yRotation, float velocityMagnitude)

@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class ActiveFishScript : MonoBehaviour
 {
+
+    public void Init()
+    {
+        Destroy(gameObject, 10f);
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("FishingBob")) // Checks if it's the fishing bob

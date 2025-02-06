@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FishingZoneScript : MonoBehaviour
@@ -6,11 +8,12 @@ public class FishingZoneScript : MonoBehaviour
     public Transform fishingZone;
     public float spawnInterval = 3f;
     public int maxFish = 5;
-
     private float zoneWidth;
     private float zoneHeight;
     public FishUI fishUI;
 
+    public Transform holdableFishSpawn;
+    public List<GameObject> fishList = new List<GameObject>();
     void Start()
     {
         if (fishingZone == null)
@@ -43,12 +46,16 @@ public class FishingZoneScript : MonoBehaviour
         );
 
         GameObject newFish = Instantiate(activeFishPrefab, spawnPosition, Quaternion.identity);
+        newFish.GetComponent<ActiveFishScript>().Init();
         newFish.transform.parent = fishingZone; // Set as child of FishingZone
     }
 
     public void OnFishCaught(GameObject fish)
     {
+        int fishIndex = Random.Range(0, fishList.Count);
+        Debug.Log($"Fish Index: {fishIndex}");
         Destroy(fish);
         fishUI.UpdateFish();
+        Instantiate(fishList[fishIndex], holdableFishSpawn);
     }
 }

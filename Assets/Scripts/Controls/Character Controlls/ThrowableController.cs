@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.XR;
 
-public class FishingBobController : MonoBehaviour
+public class ThrowableController : MonoBehaviour
 {
-    public Camera mainCamera;
-    public Transform targetArea;
     public LayerMask targetLayer;
     public float lerpSpeed = 10f;
     public float throwThreshold = 2.0f;
@@ -26,8 +25,24 @@ public class FishingBobController : MonoBehaviour
     private Rigidbody bobRigidbody;
     private int ballCounter = 3;
 
+    private Camera mainCamera;
+    private Transform targetArea;
+    private HandController handController;
+
+    private bool myHand; //LEFT = 0, RIGHT = 1
+
+    void Init(bool hand) //LEFT = 0, RIGHT = 1
+    {
+        myHand = hand;
+    }
+
     void Start()
     {
+        mainCamera = Camera.main;
+        targetArea = mainCamera.GetComponentInChildren<BoxCollider>().transform;
+        handController = FindFirstObjectByType<HandController>();
+
+        fishUI = FindFirstObjectByType<FishUI>();
         startingPosition = transform.position;
         startingRotation = transform.rotation;
         bobRigidbody = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
@@ -100,6 +115,10 @@ public class FishingBobController : MonoBehaviour
         bobRigidbody.isKinematic = true;
         isThrown = false;
     }
+    void DestroyThrowable()
+    {
+        Destroy(gameObject);
+    }
 
     void TrackMovement()
     {
@@ -132,7 +151,8 @@ public class FishingBobController : MonoBehaviour
 
         bobRigidbody.linearVelocity = throwDirection * velocityMagnitude * throwForceMultiplier;
         isThrown = true;
-        Invoke(nameof(ResetBob), returnTime);
+        Invoke(nameof(DestroyThrowable), returnTime);
+
     }
 
     float GetThrowAngle(float yRotation, float velocityMagnitude)

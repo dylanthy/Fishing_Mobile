@@ -35,6 +35,17 @@ public class FishingZoneScript : MonoBehaviour
         InvokeRepeating(nameof(SpawnActiveFish), 0f, spawnInterval);
     }
 
+    void Update()
+    {
+        if (Input.GetButtonDown("Reload"))
+        {
+            int fishIndex = Random.Range(0, fishList.Count);
+            fishUI.UpdateFish();
+            Instantiate(fishList[fishIndex], holdableFishSpawn);
+        }
+
+    }
+
     void SpawnActiveFish()
     {
         if (fishingZone.childCount >= maxFish) return; // Limits fish count
@@ -53,7 +64,6 @@ public class FishingZoneScript : MonoBehaviour
     public void OnFishCaught(GameObject fish)
     {
         int fishIndex = Random.Range(0, fishList.Count);
-        Debug.Log($"Fish Index: {fishIndex}");
         Destroy(fish);
         fishUI.UpdateFish();
         Instantiate(fishList[fishIndex], holdableFishSpawn);

@@ -25,6 +25,7 @@ public class ThrowableController : MonoBehaviour
     private Camera mainCamera;
     private Transform targetArea;
     private HandController handController;
+    public GameObject fishC;
 
     private bool myHand; //LEFT = false, RIGHT = true
 
@@ -52,11 +53,6 @@ public class ThrowableController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Reload"))
-        {
-            fishUI.UpdateBall(++ballCounter);
-        }
-
         if (Input.GetMouseButtonDown(0))
         {
             TryPickUpBob();
@@ -134,6 +130,7 @@ public class ThrowableController : MonoBehaviour
 
     void ThrowBob()
     {
+        transform.SetParent(null);
         fishUI.UpdateBall(--ballCounter);
         bobRigidbody.isKinematic = false;
         bobRigidbody.useGravity = true;

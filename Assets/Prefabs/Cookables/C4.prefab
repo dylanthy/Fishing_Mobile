@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 136039220442444357}
   - component: {fileID: 2743376795215931164}
   - component: {fileID: -2445371799186614443}
-  - component: {fileID: 4004835832232597834}
+  - component: {fileID: -2637886097120319701}
   m_Layer: 0
-  m_Name: ThrowableV4
+  m_Name: C4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 284830dd46ce77c4696ef63853c7cf5e, type: 2}
+  - {fileID: 2100000, guid: 1e19e5be3aea2c142b3e8f707955fd8e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -138,7 +138,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &4004835832232597834
+--- !u!114 &-2637886097120319701
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,19 +147,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 1937588542411740048}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7103ade61c454343b9b2841353d568b, type: 3}
+  m_Script: {fileID: 11500000, guid: dbc6a772ccad2ce46b80d4294a4433e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 24
-  lerpSpeed: 10
-  throwThreshold: 0.03
-  throwForceMultiplier: 8
-  maxFrameTrackingTime: 2
-  returnTime: 2
-  fishUI: {fileID: 0}
-  throwAngleForward: {x: -30, y: -10}
-  throwAngleRight: {x: -20, y: 0}
-  throwAngleBackward: {x: -40, y: -20}
-  throwAngleLeft: {x: -25, y: -5}
+  cookTime: 0
+  cookedMaterial: {fileID: 0}

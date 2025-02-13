@@ -3,22 +3,11 @@ using UnityEngine;
 public class Fryer : MonoBehaviour
 {
     [SerializeField] private Transform[] panLocations;
+    public GameObject[] cookableFish;
+    public GameObject cookingPan;
 
-
-    public GameObject pan;
-    void Start()
+    public void PanEntered(int grillNumber)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void PanEntered(int grill)
-    {
-        Instantiate(pan, panLocations[grill]);
+        Instantiate(cookingPan, panLocations[grillNumber]);
     }
 }

@@ -1,12 +1,22 @@
 using UnityEngine;
+using System.Linq; // Required for sorting
+using System.Collections.Generic;
+using Unity.VisualScripting; //used for Coroutine
 
 public class PanCook : MonoBehaviour
 {
     private Camera mainCamera;
-    
+    public Transform foodLocation;
+    private GameObject myFood;
+    private GameObject myFryer;
+
+    private bool isFull = false;
+
+
     void Start()
     {
-        mainCamera = Camera.main; // Optimized way to get the main camera
+        mainCamera = Camera.main;
+        myFryer = FindFirstObjectByType<Fryer>().gameObject;
     }
 
     void Update()
@@ -16,14 +26,49 @@ public class PanCook : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 1f);
 
-            int layerMask = 1 << gameObject.layer; // Convert layer to bitmask
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
+            RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Infinity);
+
+            if (hits.Length > 1)
             {
-                if (hit.transform == transform)
+                hits = hits.OrderBy(hit => hit.distance).ToArray();
+                RaycastHit secondHit = hits[1];
+
+                Debug.Log($"First hit: {hits[0].transform.name}, Second hit: {secondHit.transform.name}");
+
+                if (secondHit.transform == transform)
                 {
-                    Destroy(gameObject);
+                    TryPickUp();
                 }
             }
         }
+    }
+void OnTriggerEnter(Collider other)
+{
+    if (other.CompareTag("Cookable") && !isFull)
+    {
+        ThrowableController throwable = other.GetComponent<ThrowableController>();
+        StartCook(throwable.fishC);
+        Destroy(other.gameObject);
+        isFull = true;
+    }
+}
+
+    public void StartCook(GameObject food)
+    {
+        myFood = Instantiate(food, foodLocation);
+        myFood.GetComponent<FoodCook>().Init();
+    }
+
+    public void TryPickUp()
+    {
+        if(!myFood)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            if(myFood)
+        }        
+
     }
 }

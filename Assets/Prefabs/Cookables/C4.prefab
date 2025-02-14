@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 2743376795215931164}
   - component: {fileID: -2445371799186614443}
   - component: {fileID: -2637886097120319701}
+  - component: {fileID: 1721208885199039773}
+  - component: {fileID: -823585292881704518}
   m_Layer: 0
   m_Name: C4
   m_TagString: Untagged
@@ -150,5 +152,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbc6a772ccad2ce46b80d4294a4433e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cookTime: 0
-  cookedMaterial: {fileID: 0}
+  cookTime: 5
+  burnTime: 8
+  cookedMaterial: {fileID: 2100000, guid: c39ea2f66a848c043ae7005709261cac, type: 2}
+  burnedMaterial: {fileID: 2100000, guid: 357a00282c8dc95438ffe56fac365bc3, type: 2}
+  isCooked: 0
+  isBurned: 0
+--- !u!114 &1721208885199039773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937588542411740048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ad05669b2a8ed944af06e4bbf46587a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAssociatedGameObject: {fileID: 1937588542411740048, guid: cae269f1ad1f93a4ebf08a85f1fb56c4, type: 3}
+--- !u!114 &-823585292881704518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937588542411740048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7103ade61c454343b9b2841353d568b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  lerpSpeed: 10
+  throwThreshold: 0.03
+  throwForceMultiplier: 5
+  maxFrameTrackingTime: 0.2
+  returnTime: 2
+  fishUI: {fileID: 0}
+  throwAngle: {x: 20, y: 50}
+  fish: {fileID: 0}

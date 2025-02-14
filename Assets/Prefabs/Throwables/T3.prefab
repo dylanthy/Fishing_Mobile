@@ -160,4 +160,4 @@ MonoBehaviour:
   returnTime: 2
   fishUI: {fileID: 0}
   throwAngle: {x: 20, y: 50}
-  fishC: {fileID: 2206852426022253465, guid: e4404fd9f7992294b89ca94a01139f77, type: 3}
+  fish: {fileID: 2206852426022253465, guid: e4404fd9f7992294b89ca94a01139f77, type: 3}

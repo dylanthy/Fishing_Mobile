@@ -1,18 +1,21 @@
 using System.Collections;
 using UnityEngine;
 
-public class FoodCook : MonoBehaviour
+public class ItemCooker : MonoBehaviour
 {
     public float cookTime;
     public float burnTime;
     public Material cookedMaterial;
     public Material burnedMaterial;
-
     public bool isCooked = false;
     public bool isBurned = false;
     public void Init()
     {
         StartCoroutine(CookOverTime(cookTime, false));
+        if(GetComponent<ItemThrower>())
+        {
+           GetComponent<ItemThrower>().enabled = false; 
+        }
     }
     
     private IEnumerator CookOverTime(float time, bool isCookedYet)
@@ -29,6 +32,11 @@ public class FoodCook : MonoBehaviour
             Renderer renderer = GetComponent<Renderer>();
             renderer.material = burnedMaterial;
         }
+    }
+
+    public void EndCooking(GameObject fish)
+    {
+        fish.GetComponent<Renderer>().material = GetComponent<Renderer>().material;
     }
 
 }

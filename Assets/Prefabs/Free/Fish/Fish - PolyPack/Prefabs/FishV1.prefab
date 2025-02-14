@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 1906058684431093420}
   - component: {fileID: 7317411005216613472}
   - component: {fileID: -4773997259520564117}
-  - component: {fileID: -6980880021267988994}
   m_Layer: 7
   m_Name: FishV1
   m_TagString: Untagged
@@ -67,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 284830dd46ce77c4696ef63853c7cf5e, type: 2}
+  - {fileID: 2100000, guid: 1e19e5be3aea2c142b3e8f707955fd8e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -138,16 +137,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-6980880021267988994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104517609856167801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ad05669b2a8ed944af06e4bbf46587a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myFish: {fileID: 104517609856167801, guid: 26fd86bafd81f8d47bf55c4603d25663, type: 3}

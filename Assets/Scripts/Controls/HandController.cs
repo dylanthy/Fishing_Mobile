@@ -8,21 +8,39 @@ public class HandController : MonoBehaviour
     public Transform rightHandPoint;
     private bool lHandFull = false;
     private bool rHandFull = false;
-    public void EquipObject(GameObject item)
+    public GameObject EquipObject(GameObject item)
     {
-        if(!lHandFull)
+        if (!lHandFull)
         {
             GameObject throwable = Instantiate(item, leftHandPoint);
-            throwable.GetComponent<ThrowableController>().Init(false, leftHandPoint);
+            ItemThrower itemThrower = throwable.GetComponent<ItemThrower>();
+
+            if (itemThrower == null)
+            {
+                Debug.LogError("ThrowableController is missing on the instantiated object: " + throwable.name);
+                return null;
+            }
+
+            itemThrower.Init(false, leftHandPoint, true);
             lHandFull = true;
-            return;
+            return throwable;
         }
-        if(!rHandFull)
+        if (!rHandFull)
         {
             GameObject throwable = Instantiate(item, rightHandPoint);
-            throwable.GetComponent<ThrowableController>().Init(true, rightHandPoint);
+            ItemThrower itemThrower = throwable.GetComponent<ItemThrower>();
+
+            if (itemThrower == null)
+            {
+                Debug.LogError("ThrowableController is missing on the instantiated object: " + throwable.name);
+                return null;
+            }
+
+            itemThrower.Init(true, rightHandPoint, true);
             rHandFull = true;
+            return throwable;
         }
+        return null;
     }
 
     public void ResetHand(bool hand) //LEFT = 0, RIGHT = 1

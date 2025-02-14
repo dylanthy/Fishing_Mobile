@@ -617,10 +617,10 @@ MonoBehaviour:
   fishUI: {fileID: 1496688021}
   holdableFishSpawn: {fileID: 940097042}
   fishList:
-  - {fileID: 104517609856167801, guid: 94c015d94f6e5364e9b36b960bbe1b77, type: 3}
-  - {fileID: 7770584863604633872, guid: 67de17aaa6711224f80123d9b1ef8cb7, type: 3}
-  - {fileID: 2206852426022253465, guid: de500f6b90f89bc4c87a6585b2dea01a, type: 3}
-  - {fileID: 1937588542411740048, guid: a05072560c3476b4cb8dddf22f697392, type: 3}
+  - {fileID: 104517609856167801, guid: 8e40eb2004e7f9941824027d7cc56b96, type: 3}
+  - {fileID: 7770584863604633872, guid: a782c09b73f17274ea4fa09c30ce96fe, type: 3}
+  - {fileID: 2206852426022253465, guid: e4404fd9f7992294b89ca94a01139f77, type: 3}
+  - {fileID: 1937588542411740048, guid: ccbc5e69723d3374297f65912c5c96fc, type: 3}
 --- !u!1 &559138594
 GameObject:
   m_ObjectHideFlags: 0

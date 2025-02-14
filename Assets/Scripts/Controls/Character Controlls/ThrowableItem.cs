@@ -2,8 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.XR;
 
-public class ThrowableController : MonoBehaviour
+public class ItemThrower : MonoBehaviour
 {
+
     public LayerMask targetLayer;
     public float lerpSpeed = 10f;
     public float throwThreshold = .03f;
@@ -15,6 +16,7 @@ public class ThrowableController : MonoBehaviour
 
     private Vector3 startingPosition;
     private Quaternion startingRotation;
+    private bool isEquipped = false;
     private bool isHoldingBob = false;
     private bool isThrown = false;
     private List<Vector3> previousPositions = new List<Vector3>();
@@ -25,16 +27,20 @@ public class ThrowableController : MonoBehaviour
     private Camera mainCamera;
     private Transform targetArea;
     private HandController handController;
-    public GameObject fishC;
+    public GameObject fish;
 
     private bool myHand; //LEFT = false, RIGHT = true
 
     private Transform  handLocation;
-    public void Init(bool hand, Transform location) //LEFT = false, RIGHT = true
+    public void Init(bool hand, Transform location, bool equipped) //LEFT = false, RIGHT = true
     {
         myHand = hand;
         handLocation = location;
-
+        isEquipped = equipped;
+        if(GetComponent<ItemGrabber>())
+            GetComponent<ItemGrabber>().enabled = false;
+        if(GetComponent<ItemCooker>())
+            GetComponent<ItemCooker>().enabled = false;
     }
 
     void Start()
@@ -53,7 +59,7 @@ public class ThrowableController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && isEquipped)
         {
             TryPickUpBob();
         }
@@ -77,7 +83,7 @@ public class ThrowableController : MonoBehaviour
             TrackMovement();
         }
 
-        if (!isThrown)
+        if (!isThrown && isEquipped)
         {
             transform.position = Vector3.Lerp(transform.position, handLocation.position, Time.deltaTime * lerpSpeed);
         }

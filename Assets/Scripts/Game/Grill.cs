@@ -19,11 +19,6 @@ public class Grill : MonoBehaviour
                 isBeingUsed = true;
             }
         }
-        if(isBeingUsed && other.tag == "Cookable")
-        {
-            GameObject fishToCook = other.GetComponent<ThrowableController>().fishC;
-            GetComponentInChildren<PanCook>().StartCook(fishToCook);
-        }
     }
 
 }

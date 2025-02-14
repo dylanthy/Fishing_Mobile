@@ -1,22 +1,18 @@
 using UnityEngine;
 using System.Linq; // Required for sorting
-using System.Collections.Generic;
-using Unity.VisualScripting; //used for Coroutine
 
 public class PanCook : MonoBehaviour
 {
     private Camera mainCamera;
     public Transform foodLocation;
     private GameObject myFood;
-    private GameObject myFryer;
 
-    private bool isFull = false;
+    [SerializeField] private bool isFull = false;
 
 
     void Start()
     {
         mainCamera = Camera.main;
-        myFryer = FindFirstObjectByType<Fryer>().gameObject;
     }
 
     void Update()
@@ -33,7 +29,7 @@ public class PanCook : MonoBehaviour
                 hits = hits.OrderBy(hit => hit.distance).ToArray();
                 RaycastHit secondHit = hits[1];
 
-                Debug.Log($"First hit: {hits[0].transform.name}, Second hit: {secondHit.transform.name}");
+                // Debug.Log($"First hit: {hits[0].transform.name}, Second hit: {secondHit.transform.name}");
 
                 if (secondHit.transform == transform)
                 {
@@ -44,19 +40,22 @@ public class PanCook : MonoBehaviour
     }
 void OnTriggerEnter(Collider other)
 {
-    if (other.CompareTag("Cookable") && !isFull)
+    if(!isFull)
     {
-        ThrowableController throwable = other.GetComponent<ThrowableController>();
-        StartCook(throwable.fishC);
-        Destroy(other.gameObject);
-        isFull = true;
+        if (other.CompareTag("Cookable"))
+        {
+            isFull = true;
+            ThrowableController throwable = other.GetComponent<ThrowableController>();
+            StartCook(throwable.fish);
+            Destroy(other.gameObject);
+        }
     }
 }
 
     public void StartCook(GameObject food)
     {
         myFood = Instantiate(food, foodLocation);
-        myFood.GetComponent<FoodCook>().Init();
+        myFood.GetComponent<CookableItem>().Init();
     }
 
     public void TryPickUp()
@@ -67,7 +66,12 @@ void OnTriggerEnter(Collider other)
         }
         else
         {
-            if(myFood)
+            if(!myFood.GetComponent<CookableItem>().isCooked)
+                return;
+            else if(myFood.GetComponent<CookableItem>().isBurned)
+            {
+                
+            }
         }        
 
     }

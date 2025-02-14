@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 7317411005216613472}
   - component: {fileID: -4773997259520564117}
   - component: {fileID: 5328743788993250812}
-  - component: {fileID: -6251339899644697115}
   m_Layer: 0
   m_Name: T1
   m_TagString: Cookable
@@ -161,20 +160,4 @@ MonoBehaviour:
   returnTime: 2
   fishUI: {fileID: 0}
   throwAngle: {x: 20, y: 50}
-  fishC: {fileID: 104517609856167801, guid: 8e40eb2004e7f9941824027d7cc56b96, type: 3}
---- !u!114 &-6251339899644697115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104517609856167801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbc6a772ccad2ce46b80d4294a4433e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cookTime: 0
-  burnTime: 0
-  cookedMaterial: {fileID: 0}
-  isCooked: 0
+  fish: {fileID: 104517609856167801, guid: 8e40eb2004e7f9941824027d7cc56b96, type: 3}

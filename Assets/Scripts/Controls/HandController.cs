@@ -17,7 +17,7 @@ public class HandController : MonoBehaviour
 
             if (itemThrower == null)
             {
-                Debug.LogError("ThrowableController is missing on the instantiated object: " + throwable.name);
+                Debug.LogError("ItemThrower is missing on the instantiated object: " + throwable.name);
                 return null;
             }
 
@@ -32,7 +32,7 @@ public class HandController : MonoBehaviour
 
             if (itemThrower == null)
             {
-                Debug.LogError("ThrowableController is missing on the instantiated object: " + throwable.name);
+                Debug.LogError("ItemThrower is missing on the instantiated object: " + throwable.name);
                 return null;
             }
 

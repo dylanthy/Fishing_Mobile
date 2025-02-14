@@ -45,7 +45,7 @@ void OnTriggerEnter(Collider other)
         if (other.CompareTag("Cookable"))
         {
             isFull = true;
-            ThrowableController throwable = other.GetComponent<ThrowableController>();
+            ItemThrower throwable = other.GetComponent<ItemThrower>();
             StartCook(throwable.fish);
             Destroy(other.gameObject);
         }
@@ -55,7 +55,7 @@ void OnTriggerEnter(Collider other)
     public void StartCook(GameObject food)
     {
         myFood = Instantiate(food, foodLocation);
-        myFood.GetComponent<CookableItem>().Init();
+        myFood.GetComponent<ItemCooker>().Init();
     }
 
     public void TryPickUp()
@@ -66,9 +66,9 @@ void OnTriggerEnter(Collider other)
         }
         else
         {
-            if(!myFood.GetComponent<CookableItem>().isCooked)
+            if(!myFood.GetComponent<ItemCooker>().isCooked)
                 return;
-            else if(myFood.GetComponent<CookableItem>().isBurned)
+            else if(myFood.GetComponent<ItemCooker>().isBurned)
             {
                 
             }

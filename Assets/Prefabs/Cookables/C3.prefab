@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -8499961934889375405}
   m_Layer: 0
   m_Name: C3
-  m_TagString: Untagged
+  m_TagString: Cookable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -170,7 +170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad05669b2a8ed944af06e4bbf46587a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myAssociatedGameObject: {fileID: 2206852426022253465, guid: 66133f6fb386d264e8c42bf46c2e01c0, type: 3}
 --- !u!114 &-8499961934889375405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,11 +184,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 24
   lerpSpeed: 10
   throwThreshold: 0.03
-  throwForceMultiplier: 5
-  maxFrameTrackingTime: 0.2
+  throwForceMultiplier: 8
+  maxFrameTrackingTime: 2
   returnTime: 2
   fishUI: {fileID: 0}
   throwAngle: {x: 20, y: 50}

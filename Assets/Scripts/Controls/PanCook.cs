@@ -46,7 +46,7 @@ void OnTriggerEnter(Collider other)
         {
             isFull = true;
             ItemThrower throwable = other.GetComponent<ItemThrower>();
-            StartCook(throwable.fish);
+            StartCook(throwable.gameObject);
             Destroy(other.gameObject);
         }
     }
@@ -55,8 +55,21 @@ void OnTriggerEnter(Collider other)
     public void StartCook(GameObject food)
     {
         myFood = Instantiate(food, foodLocation);
+        Rigidbody rb = myFood.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+        
+        myFood.transform.position = foodLocation.position;
+        myFood.transform.rotation = foodLocation.rotation;
+        
         myFood.GetComponent<ItemCooker>().Init();
     }
+
 
     public void TryPickUp()
     {

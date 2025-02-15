@@ -41,8 +41,7 @@ public class FishingZoneScript : MonoBehaviour
         {
             int fishIndex = Random.Range(0, fishList.Count);
             fishUI.UpdateFish();
-            GameObject fish = Instantiate(fishList[fishIndex], holdableFishSpawn);
-            fish.tag = "Untagged";
+            Instantiate(fishList[fishIndex], holdableFishSpawn);
         }
 
     }

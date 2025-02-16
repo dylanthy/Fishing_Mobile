@@ -9,34 +9,42 @@ public class ItemCooker : MonoBehaviour
     public Material burnedMaterial;
     public bool isCooked = false;
     public bool isBurned = false;
-    public void Init()
+    public bool tempVarHasBeenStarted = false;
+    private GameObject parentPan;
+    public void Init(GameObject pan)
     {  
-        StartCoroutine(CookOverTime(cookTime, false));
+        parentPan = pan;
+        StartCoroutine(CookOverTime(cookTime));
+        tempVarHasBeenStarted = true;
         if(GetComponent<ItemThrower>())
         {
            GetComponent<ItemThrower>().enabled = false; 
         }
     }
     
-    private IEnumerator CookOverTime(float time, bool isCookedYet)
+    private IEnumerator CookOverTime(float time)
     {
+    
         yield return new WaitForSeconds(time);
-        if(!isCookedYet)
+        if(!isCooked)
         {
             Renderer renderer = GetComponent<Renderer>();
             renderer.material = cookedMaterial;
-            StartCoroutine(CookOverTime(burnTime, true));
+            isCooked = true;
+            StartCoroutine(CookOverTime(burnTime));
         }
         else
         {
+            isBurned = true;
             Renderer renderer = GetComponent<Renderer>();
             renderer.material = burnedMaterial;
         }
     }
 
-    // public void EndCooking(GameObject fish)
-    // {
-    //     fish.GetComponent<Renderer>().material = GetComponent<Renderer>().material;
-    // }
+    public void EndCooking()
+    {
+        // fish.GetComponent<Renderer>().material = GetComponent<Renderer>().material;
+        parentPan.GetComponent<PanCook>().FoodRemoved();
+    }
 
 }

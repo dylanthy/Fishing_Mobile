@@ -5,7 +5,7 @@ public class PanCook : MonoBehaviour
 {
     private Camera mainCamera;
     public Transform foodLocation;
-    private GameObject myFood;
+    [SerializeField] private GameObject myFood;
 
     [SerializeField] private bool isFull = false;
 
@@ -29,7 +29,7 @@ public class PanCook : MonoBehaviour
                 hits = hits.OrderBy(hit => hit.distance).ToArray();
                 RaycastHit secondHit = hits[1];
 
-                // Debug.Log($"First hit: {hits[0].transform.name}, Second hit: {secondHit.transform.name}");
+                Debug.Log($"First hit: {hits[0].transform.name}, Second hit: {secondHit.transform.name}");
 
                 if (secondHit.transform == transform)
                 {
@@ -67,7 +67,7 @@ void OnTriggerEnter(Collider other)
         myFood.transform.position = foodLocation.position;
         myFood.transform.rotation = foodLocation.rotation;
         
-        myFood.GetComponent<ItemCooker>().Init();
+        myFood.GetComponent<ItemCooker>().Init(gameObject);
     }
 
 
@@ -79,13 +79,14 @@ void OnTriggerEnter(Collider other)
         }
         else
         {
-            if(!myFood.GetComponent<ItemCooker>().isCooked)
-                return;
-            else if(myFood.GetComponent<ItemCooker>().isBurned)
-            {
-                
-            }
+            myFood.GetComponent<ItemGrabber>().EquipItem();
         }        
 
+    }
+
+    public void FoodRemoved()
+    {
+        myFood = null;
+        isFull = false;
     }
 }

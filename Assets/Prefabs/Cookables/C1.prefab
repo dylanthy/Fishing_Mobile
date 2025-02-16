@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1e19e5be3aea2c142b3e8f707955fd8e, type: 2}
+  - {fileID: 2100000, guid: c39ea2f66a848c043ae7005709261cac, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -158,6 +158,7 @@ MonoBehaviour:
   burnedMaterial: {fileID: 2100000, guid: 357a00282c8dc95438ffe56fac365bc3, type: 2}
   isCooked: 0
   isBurned: 0
+  tempVarHasBeenStarted: 0
 --- !u!114 &304936586557585537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +171,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad05669b2a8ed944af06e4bbf46587a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &-482542800474010781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,4 +196,3 @@ MonoBehaviour:
   returnTime: 2
   fishUI: {fileID: 0}
   throwAngle: {x: 20, y: 50}
-  fish: {fileID: 0}

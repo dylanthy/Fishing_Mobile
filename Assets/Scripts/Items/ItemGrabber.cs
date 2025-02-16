@@ -5,10 +5,12 @@ public class ItemGrabber : MonoBehaviour
 {
     private Camera mainCamera;
     private HandController handController;
+    [SerializeField] private LayerMask layerMask;
     void Start()
     {
         mainCamera = Camera.main;
         handController = FindFirstObjectByType<HandController>();   
+        layerMask = gameObject.layer;
     }
     void Update()
     {
@@ -21,15 +23,29 @@ public class ItemGrabber : MonoBehaviour
     void TryEquipItem()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        int layerMask = 1 << gameObject.layer; // Convert layer to bitmask
-        if (Physics.Raycast(ray, out RaycastHit hit, 20f, layerMask) && hit.transform == transform)
+        int bitMask = 1 << layerMask; // Convert layer to bitmask
+        if (Physics.Raycast(ray, out RaycastHit hit, 20f, bitMask) && hit.transform == transform)
         {
-            if(GetComponent<ItemThrower>())
-            {
-                GetComponent<ItemThrower>().enabled = true;
-            }
-            handController.EquipObject(gameObject);
-            Destroy(gameObject);
+            EquipItem();
         }
+        else
+        {
+            Debug.Log($"ItemGrabber on {gameObject.name} failed, hit {hit.transform.gameObject.name}");
+        }
+    }
+
+    public void EquipItem()
+    {
+        if(GetComponent<ItemThrower>())
+        {
+            GetComponent<ItemThrower>().enabled = true;
+        }
+        if(GetComponent<ItemCooker>() && GetComponent<ItemCooker>().tempVarHasBeenStarted == true)
+        {
+            GetComponent<ItemCooker>().EndCooking();
+        }
+
+        handController.EquipObject(gameObject);
+        Destroy(gameObject);
     }
 }

@@ -135,7 +135,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -152,12 +152,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbc6a772ccad2ce46b80d4294a4433e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fishIdentifier: 1
   cookTime: 5
   burnTime: 8
   cookedMaterial: {fileID: 2100000, guid: c39ea2f66a848c043ae7005709261cac, type: 2}
   burnedMaterial: {fileID: 2100000, guid: 357a00282c8dc95438ffe56fac365bc3, type: 2}
   isCooked: 0
   isBurned: 0
+  tempVarHasBeenStarted: 0
 --- !u!114 &-5372297204294054511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +172,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad05669b2a8ed944af06e4bbf46587a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &-31350739460105985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,4 +197,3 @@ MonoBehaviour:
   returnTime: 2
   fishUI: {fileID: 0}
   throwAngle: {x: 20, y: 50}
-  fish: {fileID: 0}

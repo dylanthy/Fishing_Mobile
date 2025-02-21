@@ -4,7 +4,7 @@ using UnityEngine;
 public class CustomerMovement : MonoBehaviour
 {
     public float walkSpeed;
-    private Transform orderPoint;
+    public Transform orderPoint;
     private GameObject orderManager;
     public GameObject[] fishSpeech;
 
@@ -22,26 +22,24 @@ public class CustomerMovement : MonoBehaviour
     void Update()
     {
         transform.position = Vector3.Lerp(transform.position, orderPoint.position, Time.deltaTime * walkSpeed);
-        if(transform.position == orderPoint.position)
-            Order();
+        if(Vector3.Distance(transform.position, orderPoint.position) < 0.1f)
+            SayOrder();
     }
-    void Order()
+    public void SayOrder()
     {
-        if(GetComponent<Order>().anyFish)
+        if(GetComponent<Order>().orderAnyFish)
         {
-            text.text = $"Any {GetComponent<Order>().fishNumber} fish";
+            text.text = $"Any {GetComponent<Order>().orderFishNumber} fish";
             speechBubble.SetActive(true);
             text.gameObject.SetActive(true);
             dish.SetActive(false);
         }
         else
         {
-            dish = fishSpeech[GetComponent<Order>().fishNumber];
+            dish = fishSpeech[GetComponent<Order>().orderFishNumber];
             speechBubble.SetActive(true);
             text.gameObject.SetActive(false);
             dish.SetActive(true);           
         }
     }
-
-    
 }

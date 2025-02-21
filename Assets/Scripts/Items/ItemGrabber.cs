@@ -28,10 +28,6 @@ public class ItemGrabber : MonoBehaviour
         {
             EquipItem();
         }
-        else
-        {
-            Debug.Log($"ItemGrabber on {gameObject.name} failed, hit {hit.transform.gameObject.name}");
-        }
     }
 
     public void EquipItem()

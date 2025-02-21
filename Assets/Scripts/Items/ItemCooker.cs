@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ItemCooker : MonoBehaviour
 {
+    public int fishIdentifier;
     public float cookTime;
     public float burnTime;
     public Material cookedMaterial;

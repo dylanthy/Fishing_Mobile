@@ -69,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c39ea2f66a848c043ae7005709261cac, type: 2}
+  - {fileID: 2100000, guid: 1e19e5be3aea2c142b3e8f707955fd8e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -135,7 +135,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbc6a772ccad2ce46b80d4294a4433e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fishIdentifier: 1
   cookTime: 5
   burnTime: 8
   cookedMaterial: {fileID: 2100000, guid: c39ea2f66a848c043ae7005709261cac, type: 2}

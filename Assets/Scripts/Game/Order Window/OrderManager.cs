@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class OrderManager : MonoBehaviour
 {
+    public int currency = 25;
     public float timeBetweenCustomers = 15f;
-    private float remainingTimeBetweenCustomers;
+    public float remainingTimeBetweenCustomers = 0f;
+
+    public float totalHappiness = 100f;
+
+    public float remainingHappiness;
+    public float happinessLossPerSecond = .5f;
     public bool isOpen = false;
     public GameObject customerPrefab;
     public List<Order> myOrders = new List<Order>();
@@ -20,7 +26,11 @@ public class OrderManager : MonoBehaviour
     public bool p3Occupied;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    
+
+    void Start()
+    {
+        remainingHappiness = totalHappiness;
+    }
     public void OpenToggle()
     {
         isOpen = !isOpen;
@@ -29,11 +39,21 @@ public class OrderManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(remainingHappiness > totalHappiness)
+            remainingHappiness = totalHappiness;
         if(isOpen)
         {
             if(remainingTimeBetweenCustomers <= 0f)
             {
-                CreateCustomer();
+                if(!p1Occupied || !p2Occupied || !p3Occupied)
+                {
+                    CreateCustomer();
+                    remainingTimeBetweenCustomers = timeBetweenCustomers;
+                }
+                else
+                {
+                    remainingHappiness -= happinessLossPerSecond * Time.deltaTime;
+                }
             }
             else
             {
@@ -45,25 +65,50 @@ public class OrderManager : MonoBehaviour
     private void CreateCustomer()
     {
         Transform myOrderPoint = null;
-        int mySpawn = Random.Range(0,3);
-        if(mySpawn == 0)
+        if(!p1Occupied)
         {
             myOrderPoint = orderPoint1;
-            p1Occupied = true;
+            p1Occupied = true;    
         }
-        else if (mySpawn == 1)
+        else
         {
-            myOrderPoint = orderPoint2;
-            p2Occupied = true;
-        }          
-        else if (mySpawn == 2)
-        {
-            myOrderPoint = orderPoint3;
-            p3Occupied = true;
-        }       
+            int mySpawn = Random.Range(0,2);
+            if (mySpawn == 0 && !p2Occupied)
+            {
+                myOrderPoint = orderPoint2;
+                p2Occupied = true;
+            }          
+            else if(!p3Occupied)
+            {
+                myOrderPoint = orderPoint3;
+                p3Occupied = true;
+            }       
+        }
         GameObject myCustomer = Instantiate(customerPrefab, customerSpawnPoint);
         myCustomer.GetComponent<Order>().Init();
         myCustomer.GetComponent<CustomerMovement>().Init(myOrderPoint, gameObject);
         myOrders.Add(myCustomer.GetComponent<Order>());
+    }
+
+
+    public void ResetOrderPoint(Transform myOrderPoint)
+    {
+        if(myOrderPoint == orderPoint1)
+        {
+            p1Occupied = false;
+            remainingHappiness += 10f;
+        }
+        else if(myOrderPoint == orderPoint2)
+        {
+            p2Occupied = false;
+            remainingHappiness += 10f;
+
+        }
+        else if(myOrderPoint == orderPoint3)
+        {
+            p3Occupied = false;
+            remainingHappiness += 10f;
+
+        }
     }
 }

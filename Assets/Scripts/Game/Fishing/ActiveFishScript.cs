@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ActiveFishScript : MonoBehaviour
 {
+    public GameObject myHoldableFish;
 
     public void Init()
     {
@@ -14,7 +15,8 @@ public class ActiveFishScript : MonoBehaviour
             FishingZoneScript fishingZone = GetComponentInParent<FishingZoneScript>();
             if (fishingZone != null)
             {
-                fishingZone.OnFishCaught(gameObject);
+                fishingZone.OnFishCaught(gameObject, myHoldableFish);
+                Destroy(other.gameObject);
             }
         }
     }

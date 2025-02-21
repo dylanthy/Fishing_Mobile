@@ -1,71 +1,50 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class FishingZoneScript : MonoBehaviour
 {
-    public GameObject activeFishPrefab;
+    public List<GameObject> fishPrefabs;
     public Transform fishingZone;
-    public float spawnInterval = 3f;
-    public int maxFish = 5;
+    public Transform holdableFishSpawn;
+    public FishUI fishUI;
+    
     private float zoneWidth;
     private float zoneHeight;
-    public FishUI fishUI;
 
-    public Transform holdableFishSpawn;
-    public List<GameObject> fishList = new List<GameObject>();
+    public float spawnInterval = 3f;
+    public int maxFish = 5;
+    private float zoneRadius;
+
     void Start()
     {
-        if (fishingZone == null)
-        {
-            Debug.LogError("FishingZone not assigned!");
-            return;
-        }
-
         MeshRenderer renderer = fishingZone.GetComponent<MeshRenderer>();
-        if (renderer == null)
-        {
-            Debug.LogError("FishingZone must have a MeshRenderer!");
-            return;
-        }
-
         zoneWidth = renderer.bounds.size.x / 2;
         zoneHeight = renderer.bounds.size.z / 2;
-
-        InvokeRepeating(nameof(SpawnActiveFish), 0f, spawnInterval);
+        InvokeRepeating(nameof(SpawnFish), 0f, spawnInterval);
     }
 
-    void Update()
+    void SpawnFish()
     {
-        if (Input.GetButtonDown("Reload"))
-        {
-            int fishIndex = Random.Range(0, fishList.Count);
-            fishUI.UpdateFish();
-            Instantiate(fishList[fishIndex], holdableFishSpawn);
-        }
-
-    }
-
-    void SpawnActiveFish()
-    {
-        if (fishingZone.childCount >= maxFish) return; // Limits fish count
+        if (fishingZone.childCount >= maxFish) return;
 
         Vector3 spawnPosition = new Vector3(
             Random.Range(fishingZone.position.x - zoneWidth, fishingZone.position.x + zoneWidth),
             fishingZone.position.y + 0.3f,
             Random.Range(fishingZone.position.z - zoneHeight, fishingZone.position.z + zoneHeight)
         );
+        GameObject fishPrefab = fishPrefabs[Random.Range(0, fishPrefabs.Count)];
+        GameObject newFish = Instantiate(fishPrefab, spawnPosition, Quaternion.identity, fishingZone);
 
-        GameObject newFish = Instantiate(activeFishPrefab, spawnPosition, Quaternion.identity);
-        newFish.GetComponent<ActiveFishScript>().Init();
-        newFish.transform.parent = fishingZone; // Set as child of FishingZone
+        // Ensure the fish faces -X at spawn
+        newFish.transform.rotation = Quaternion.Euler(0, 90, 0);
+
+        newFish.AddComponent<SwimmingFish>();
     }
 
-    public void OnFishCaught(GameObject fish)
+    public void OnFishCaught(GameObject fish, GameObject spawnedFish)
     {
-        int fishIndex = Random.Range(0, fishList.Count);
         Destroy(fish);
         fishUI.UpdateFish();
-        Instantiate(fishList[fishIndex], holdableFishSpawn);
+        FindFirstObjectByType<HandController>().EquipObject(spawnedFish);
     }
 }

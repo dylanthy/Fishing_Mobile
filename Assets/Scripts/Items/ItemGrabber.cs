@@ -36,7 +36,7 @@ public class ItemGrabber : MonoBehaviour
         {
             GetComponent<ItemThrower>().enabled = true;
         }
-        if(GetComponent<ItemCooker>() && GetComponent<ItemCooker>().tempVarHasBeenStarted == true)
+        if(GetComponent<ItemCooker>() && GetComponent<ItemCooker>().isBeingUsed == true)
         {
             GetComponent<ItemCooker>().EndCooking();
         }

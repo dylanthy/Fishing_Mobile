@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -14,7 +15,6 @@ public class OrderManager : MonoBehaviour
     public float happinessLossPerSecond = .5f;
     public bool isOpen = false;
     public GameObject customerPrefab;
-    public List<Order> myOrders = new List<Order>();
 
     [Header("Transforms")]
     public Transform customerSpawnPoint;
@@ -87,7 +87,6 @@ public class OrderManager : MonoBehaviour
         GameObject myCustomer = Instantiate(customerPrefab, customerSpawnPoint);
         myCustomer.GetComponent<Order>().Init();
         myCustomer.GetComponent<CustomerMovement>().Init(myOrderPoint, gameObject);
-        myOrders.Add(myCustomer.GetComponent<Order>());
     }
 
 

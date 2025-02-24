@@ -1,56 +1,45 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.XR;
 
 public class ItemThrower : MonoBehaviour
 {
-
-    public LayerMask targetLayer;
-    public float lerpSpeed = 10f;
-    public float throwThreshold = .03f;
+    [Header("Throwing Settings")]
     public float throwForceMultiplier = 5f;
-    public float maxFrameTrackingTime = 0.2f;
+    public float maxThrowVelocity = 50f;
+    public float minThrowVelocity = 1f;
     public float returnTime = 2f;
-    public FishUI fishUI;
-    public Vector2 throwAngle = new Vector2(20f, 50f);
+    public float targetAngle = 45f; // Base throw angle set in the inspector
 
-    private Vector3 startingPosition;
-    private Quaternion startingRotation;
+    [Header("References")]
+    public LayerMask targetLayer;
+    public FishUI fishUI;
+    
+    private Camera mainCamera;
+    private Rigidbody bobRigidbody;
+    private HandController handController;
+
     private bool isEquipped = false;
     private bool isHoldingBob = false;
     private bool isThrown = false;
     private List<Vector3> previousPositions = new List<Vector3>();
     private float timeTracking = 0f;
-    private Rigidbody bobRigidbody;
     private int ballCounter = 3;
+    private Transform handLocation;
+    private bool myHand; // LEFT = false, RIGHT = true
 
-    private Camera mainCamera;
-    private Transform targetArea;
-    private HandController handController;
-
-    private bool myHand; //LEFT = false, RIGHT = true
-
-    private Transform  handLocation;
-    public void Init(bool hand, Transform location, bool equipped) //LEFT = false, RIGHT = true
+    public void Init(bool hand, Transform location, bool equipped)
     {
-        myHand = hand;
         handLocation = location;
         isEquipped = equipped;
-        if(GetComponent<ItemGrabber>())
-            GetComponent<ItemGrabber>().enabled = false;
-        if(GetComponent<ItemCooker>())
-            GetComponent<ItemCooker>().enabled = false;
+        DisableComponents();
     }
 
     void Start()
     {
         mainCamera = Camera.main;
-        targetArea = mainCamera.GetComponentInChildren<BoxCollider>().transform;
         handController = FindFirstObjectByType<HandController>();
-
         fishUI = FindFirstObjectByType<FishUI>();
-        startingPosition = transform.position;
-        startingRotation = transform.rotation;
+
         bobRigidbody = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
         bobRigidbody.useGravity = false;
         bobRigidbody.maxAngularVelocity = 100f;
@@ -59,21 +48,15 @@ public class ItemThrower : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButtonDown(0) && isEquipped)
-        {
             TryPickUpBob();
-        }
 
         if (Input.GetMouseButtonUp(0) && isHoldingBob)
         {
             isHoldingBob = false;
-            if (CalculateMomentum() > throwThreshold)
-            {
+            if (CalculateVelocity().magnitude >= minThrowVelocity)
                 ThrowBob();
-            }
             else
-            {
                 ResetBob();
-            }
         }
 
         if (isHoldingBob)
@@ -83,15 +66,12 @@ public class ItemThrower : MonoBehaviour
         }
 
         if (!isThrown && isEquipped)
-        {
-            transform.position = Vector3.Lerp(transform.position, handLocation.position, Time.deltaTime * lerpSpeed);
-        }
+            transform.position = Vector3.Lerp(transform.position, handLocation.position, Time.deltaTime * 10f);
     }
 
     void TryPickUpBob()
     {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit) && hit.transform == transform)
+        if (Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit) && hit.transform == transform)
         {
             isHoldingBob = true;
             bobRigidbody.isKinematic = true;
@@ -102,23 +82,8 @@ public class ItemThrower : MonoBehaviour
 
     void MoveBobToCursor()
     {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, targetLayer) && hit.transform == targetArea)
-        {
+        if (Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, Mathf.Infinity, targetLayer))
             transform.position = hit.point;
-        }
-    }
-
-    void ResetBob()
-    {
-        transform.position = startingPosition;
-        transform.rotation = startingRotation;
-        bobRigidbody.isKinematic = true;
-        isThrown = false;
-    }
-    void DestroyThrowable()
-    {
-        Destroy(gameObject);
     }
 
     void TrackMovement()
@@ -128,9 +93,11 @@ public class ItemThrower : MonoBehaviour
         timeTracking += Time.deltaTime;
     }
 
-    float CalculateMomentum()
+    Vector3 CalculateVelocity()
     {
-        return (previousPositions.Count < 2 || timeTracking == 0f) ? 0f : (previousPositions[^1] - previousPositions[0]).magnitude / timeTracking;
+        if (previousPositions.Count < 2 || timeTracking == 0f)
+            return Vector3.zero;
+        return (previousPositions[^1] - previousPositions[0]) / timeTracking;
     }
 
     void ThrowBob()
@@ -140,33 +107,36 @@ public class ItemThrower : MonoBehaviour
         bobRigidbody.isKinematic = false;
         bobRigidbody.useGravity = true;
 
-        if (previousPositions.Count < 2) return;
+        Vector3 velocity = CalculateVelocity();
+        velocity = Vector3.ClampMagnitude(velocity, maxThrowVelocity);
 
-        Vector3 totalDisplacement = previousPositions[^1] - previousPositions[0];
-        float velocityMagnitude = totalDisplacement.magnitude / timeTracking;
-        Vector3 throwDirection = totalDisplacement.normalized;
+        float cameraTilt = mainCamera.transform.eulerAngles.x;
+        float finalThrowAngle = targetAngle - cameraTilt;
+        Quaternion throwRotation = Quaternion.AngleAxis(finalThrowAngle, mainCamera.transform.right);
+        Vector3 adjustedThrowDirection = throwRotation * mainCamera.transform.forward;
 
-        Vector3 rotationAxis = mainCamera.transform.right;
-        float angle = GetThrowAngle(velocityMagnitude);
-        throwDirection = Quaternion.AngleAxis(angle, rotationAxis) * throwDirection;
+        bobRigidbody.linearVelocity = adjustedThrowDirection * velocity.magnitude;
 
-        bobRigidbody.linearVelocity = throwDirection * velocityMagnitude * throwForceMultiplier;
         isThrown = true;
-        Debug.Log($"Resetting Hand {myHand}");
         handController.ResetHand(myHand);
         Invoke(nameof(DestroyThrowable), returnTime);
-        if(GetComponent<ItemCooker>())
-        {
-            GetComponent<ItemCooker>().enabled = true;
-        }
-        if(GetComponent<ItemGrabber>())
-        {
-            GetComponent<ItemGrabber>().enabled = true;
-        }
     }
 
-    float GetThrowAngle(float velocityMagnitude)
+    void ResetBob()
     {
-        return Mathf.Lerp(throwAngle.x, throwAngle.y, velocityMagnitude / throwForceMultiplier);
+        transform.position = handLocation.position;
+        bobRigidbody.isKinematic = true;
+        isThrown = false;
+    }
+
+    void DestroyThrowable()
+    {
+        Destroy(gameObject);
+    }
+
+    void DisableComponents()
+    {
+        if (GetComponent<ItemGrabber>()) GetComponent<ItemGrabber>().enabled = false;
+        if (GetComponent<ItemCooker>()) GetComponent<ItemCooker>().enabled = false;
     }
 }

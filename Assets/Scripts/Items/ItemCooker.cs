@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ItemCooker : MonoBehaviour
 {
+    public bool isBeingUsed;
     public int fishIdentifier;
     public float cookTime;
     public float burnTime;
@@ -10,13 +11,12 @@ public class ItemCooker : MonoBehaviour
     public Material burnedMaterial;
     public bool isCooked = false;
     public bool isBurned = false;
-    public bool tempVarHasBeenStarted = false;
     private GameObject parentPan;
     public void Init(GameObject pan)
     {  
         parentPan = pan;
         StartCoroutine(CookOverTime(cookTime));
-        tempVarHasBeenStarted = true;
+        isBeingUsed = true;
         if(GetComponent<ItemThrower>())
         {
            GetComponent<ItemThrower>().enabled = false; 
@@ -25,7 +25,6 @@ public class ItemCooker : MonoBehaviour
     
     private IEnumerator CookOverTime(float time)
     {
-    
         yield return new WaitForSeconds(time);
         if(!isCooked)
         {
@@ -44,6 +43,7 @@ public class ItemCooker : MonoBehaviour
 
     public void EndCooking()
     {
+        isBeingUsed = false;
         // fish.GetComponent<Renderer>().material = GetComponent<Renderer>().material;
         parentPan.GetComponent<PanCook>().FoodRemoved();
     }

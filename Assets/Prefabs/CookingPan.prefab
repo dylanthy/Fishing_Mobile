@@ -133,6 +133,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodLocation: {fileID: 3617368586123208172}
+  myFood: {fileID: 0}
+  isFull: 0
 --- !u!65 &8015420197491484855
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -152,5 +154,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.29789847, y: 0.14224173, z: 0.27865764}
-  m_Center: {x: 0.009620376, y: 0.07112085, z: 0.000000059604645}
+  m_Size: {x: 0.27687216, y: 0.062179297, z: 0.2708137}
+  m_Center: {x: 0.0050918064, y: 0.031089619, z: -0.003921966}

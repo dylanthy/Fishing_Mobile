@@ -29,7 +29,7 @@ public class PanCook : MonoBehaviour
                 hits = hits.OrderBy(hit => hit.distance).ToArray();
                 RaycastHit secondHit = hits[1];
 
-                Debug.Log($"First hit: {hits[0].transform.name}, Second hit: {secondHit.transform.name}");
+                // Debug.Log($"First hit: {hits[0].transform.name}, Second hit: {secondHit.transform.name}");
 
                 if (secondHit.transform == transform)
                 {

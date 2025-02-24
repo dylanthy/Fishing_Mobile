@@ -10,7 +10,9 @@ public class CustomerMovement : MonoBehaviour
 
     public GameObject speechBubble;
     public TextMeshPro text;
-    public GameObject dish;
+    public GameObject dishParent;
+
+    private bool hasOrderedOnce = false;
 
 
     public void Init(Transform orderPoint, GameObject orderManager)
@@ -21,25 +23,35 @@ public class CustomerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!orderPoint)
+            Debug.LogWarning("NoOrderPoint");
         transform.position = Vector3.Lerp(transform.position, orderPoint.position, Time.deltaTime * walkSpeed);
         if(Vector3.Distance(transform.position, orderPoint.position) < 0.1f)
             SayOrder();
     }
     public void SayOrder()
     {
+
         if(GetComponent<Order>().orderAnyFish)
         {
             text.text = $"Any {GetComponent<Order>().orderFishNumber} fish";
             speechBubble.SetActive(true);
             text.gameObject.SetActive(true);
-            dish.SetActive(false);
+            hasOrderedOnce = true;
         }
         else
         {
-            dish = fishSpeech[GetComponent<Order>().orderFishNumber];
+            GameObject dish = fishSpeech[GetComponent<Order>().orderFishNumber];
             speechBubble.SetActive(true);
             text.gameObject.SetActive(false);
-            dish.SetActive(true);           
+            dishParent.SetActive(true);
+            if(!hasOrderedOnce)
+            {
+                GameObject display = Instantiate(dish, gameObject.transform);
+                display.transform.SetParent(dishParent.transform, false);
+                hasOrderedOnce = true;
+            }
+                  
         }
     }
 }

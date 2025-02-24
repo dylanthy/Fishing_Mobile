@@ -108,7 +108,7 @@ SphereCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 0.75
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2576879364881735597
 MonoBehaviour:
@@ -122,21 +122,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7103ade61c454343b9b2841353d568b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
-  targetArea: {fileID: 0}
+  lerpSpeed: 10
+  throwThreshold: 0.03
+  throwForceMultiplier: 1
+  maxFrameTrackingTime: 2
+  throwAngle: {x: 20, y: 50}
   targetLayer:
     serializedVersion: 2
     m_Bits: 24
-  lerpSpeed: 10
-  throwThreshold: 0.03
-  throwForceMultiplier: 8
-  maxFrameTrackingTime: 2
   returnTime: 2
   fishUI: {fileID: 0}
-  throwAngleForward: {x: -30, y: -10}
-  throwAngleRight: {x: -20, y: 0}
-  throwAngleBackward: {x: -40, y: -20}
-  throwAngleLeft: {x: 20, y: 50}
 --- !u!54 &3778340927872535088
 Rigidbody:
   m_ObjectHideFlags: 0

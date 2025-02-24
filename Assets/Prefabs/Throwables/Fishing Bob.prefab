@@ -122,16 +122,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7103ade61c454343b9b2841353d568b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lerpSpeed: 10
-  throwThreshold: 0.03
-  throwForceMultiplier: 1
-  maxFrameTrackingTime: 2
-  throwAngle: {x: 20, y: 50}
+  trackingTime: 5
+  maxThrowVelocity: 50
+  minThrowVelocity: 0.01
+  returnTime: 2
+  targetAngle: 0
   targetLayer:
     serializedVersion: 2
     m_Bits: 24
-  returnTime: 2
   fishUI: {fileID: 0}
+  handController: {fileID: 0}
 --- !u!54 &3778340927872535088
 Rigidbody:
   m_ObjectHideFlags: 0

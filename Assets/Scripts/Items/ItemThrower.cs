@@ -4,31 +4,32 @@ using System.Collections.Generic;
 public class ItemThrower : MonoBehaviour
 {
     [Header("Throwing Settings")]
-    public float throwForceMultiplier = 5f;
+    public float trackingTime = 5f;
     public float maxThrowVelocity = 50f;
     public float minThrowVelocity = 1f;
     public float returnTime = 2f;
-    public float targetAngle = 45f; // Base throw angle set in the inspector
+    public float targetAngle = 45f; // Desired throw angle
 
     [Header("References")]
     public LayerMask targetLayer;
-    public FishUI fishUI;
+    [SerializeField] private FishUI fishUI;
     
     private Camera mainCamera;
-    private Rigidbody bobRigidbody;
-    private HandController handController;
+    private Rigidbody itemRigidbody;
+    [SerializeField] private HandController handController;
 
     private bool isEquipped = false;
-    private bool isHoldingBob = false;
+    private bool isHoldingItem = false;
     private bool isThrown = false;
     private List<Vector3> previousPositions = new List<Vector3>();
-    private float timeTracking = 0f;
     private int ballCounter = 3;
     private Transform handLocation;
     private bool myHand; // LEFT = false, RIGHT = true
 
+    // Fixed the assignment: assign the parameter value to myHand.
     public void Init(bool hand, Transform location, bool equipped)
     {
+        myHand = hand;
         handLocation = location;
         isEquipped = equipped;
         DisableComponents();
@@ -37,12 +38,14 @@ public class ItemThrower : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        handController = FindFirstObjectByType<HandController>();
-        fishUI = FindFirstObjectByType<FishUI>();
+        if (handController == null)
+            handController = FindFirstObjectByType<HandController>();
+        if (fishUI == null)
+            fishUI = FindFirstObjectByType<FishUI>();
 
-        bobRigidbody = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
-        bobRigidbody.useGravity = false;
-        bobRigidbody.maxAngularVelocity = 100f;
+        itemRigidbody = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
+        itemRigidbody.useGravity = false;
+        itemRigidbody.maxAngularVelocity = 100f;
     }
 
     void Update()
@@ -50,21 +53,21 @@ public class ItemThrower : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && isEquipped)
             TryPickUpBob();
 
-        if (Input.GetMouseButtonUp(0) && isHoldingBob)
+        if (Input.GetMouseButtonUp(0) && isHoldingItem)
         {
-            isHoldingBob = false;
+            isHoldingItem = false;
             if (CalculateVelocity().magnitude >= minThrowVelocity)
                 ThrowBob();
             else
                 ResetBob();
         }
 
-        if (isHoldingBob)
+        if (isHoldingItem)
         {
             MoveBobToCursor();
             TrackMovement();
         }
-
+            transform.position = Vector3.MoveTowards(transform.position, handLocation.position, Time.deltaTime * 10f);
         if (!isThrown && isEquipped)
             transform.position = Vector3.Lerp(transform.position, handLocation.position, Time.deltaTime * 10f);
     }
@@ -73,10 +76,10 @@ public class ItemThrower : MonoBehaviour
     {
         if (Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit) && hit.transform == transform)
         {
-            isHoldingBob = true;
-            bobRigidbody.isKinematic = true;
+            isHoldingItem = true;
+            itemRigidbody.isKinematic = true;
             previousPositions.Clear();
-            timeTracking = 0f;
+            trackingTime = 0f;
         }
     }
 
@@ -90,32 +93,37 @@ public class ItemThrower : MonoBehaviour
     {
         if (previousPositions.Count > 10) previousPositions.RemoveAt(0);
         previousPositions.Add(transform.position);
-        timeTracking += Time.deltaTime;
+        trackingTime += Time.deltaTime;
     }
 
     Vector3 CalculateVelocity()
     {
-        if (previousPositions.Count < 2 || timeTracking == 0f)
+        if (previousPositions.Count < 2 || trackingTime == 0f)
             return Vector3.zero;
-        return (previousPositions[^1] - previousPositions[0]) / timeTracking;
+        return (previousPositions[^1] - previousPositions[0]) / trackingTime;
     }
 
     void ThrowBob()
     {
         transform.SetParent(null);
         fishUI.UpdateBall(--ballCounter);
-        bobRigidbody.isKinematic = false;
-        bobRigidbody.useGravity = true;
+        itemRigidbody.isKinematic = false;
+        itemRigidbody.useGravity = true;
 
-        Vector3 velocity = CalculateVelocity();
-        velocity = Vector3.ClampMagnitude(velocity, maxThrowVelocity);
+        // Get the tracked average speed.
+        Vector3 trackedVelocity = CalculateVelocity();
+        float throwSpeed = Mathf.Clamp(trackedVelocity.magnitude, minThrowVelocity, maxThrowVelocity);
 
-        float cameraTilt = mainCamera.transform.eulerAngles.x;
-        float finalThrowAngle = targetAngle - cameraTilt;
-        Quaternion throwRotation = Quaternion.AngleAxis(finalThrowAngle, mainCamera.transform.right);
-        Vector3 adjustedThrowDirection = throwRotation * mainCamera.transform.forward;
+        // Use the camera's forward vector, but only its horizontal component.
+        Vector3 horizontalDir = mainCamera.transform.forward;
+        horizontalDir.y = 0;
+        horizontalDir.Normalize();
 
-        bobRigidbody.linearVelocity = adjustedThrowDirection * velocity.magnitude;
+        // Calculate the throw velocity based on the target angle.
+        float angleInRad = targetAngle * Mathf.Deg2Rad;
+        Vector3 throwVelocity = (horizontalDir * Mathf.Cos(angleInRad) + Vector3.up * Mathf.Sin(angleInRad)) * throwSpeed;
+
+        itemRigidbody.linearVelocity = throwVelocity;
 
         isThrown = true;
         handController.ResetHand(myHand);
@@ -125,7 +133,8 @@ public class ItemThrower : MonoBehaviour
     void ResetBob()
     {
         transform.position = handLocation.position;
-        bobRigidbody.isKinematic = true;
+        itemRigidbody.isKinematic = true;
+        itemRigidbody.useGravity = false;
         isThrown = false;
     }
 

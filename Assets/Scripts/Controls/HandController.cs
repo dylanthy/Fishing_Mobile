@@ -21,7 +21,7 @@ public class HandController : MonoBehaviour
                 return null;
             }
 
-            itemThrower.Init(false, leftHandPoint, true);
+            itemThrower.Init(false, leftHandPoint);
             lHandFull = true;
             return throwable;
         }
@@ -36,7 +36,7 @@ public class HandController : MonoBehaviour
                 return null;
             }
 
-            itemThrower.Init(true, rightHandPoint, true);
+            itemThrower.Init(true, rightHandPoint);
             rHandFull = true;
             return throwable;
         }

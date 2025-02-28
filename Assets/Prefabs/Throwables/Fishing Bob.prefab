@@ -123,15 +123,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trackingTime: 5
-  maxThrowVelocity: 50
+  maxThrowVelocity: 3
   minThrowVelocity: 0.01
   returnTime: 2
-  targetAngle: 0
+  targetAngle: 40
   targetLayer:
     serializedVersion: 2
     m_Bits: 24
-  fishUI: {fileID: 0}
   handController: {fileID: 0}
+  averageVelocity: {x: 0, y: 0, z: 0}
 --- !u!54 &3778340927872535088
 Rigidbody:
   m_ObjectHideFlags: 0

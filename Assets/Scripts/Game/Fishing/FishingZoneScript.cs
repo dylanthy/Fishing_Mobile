@@ -5,15 +5,12 @@ public class FishingZoneScript : MonoBehaviour
 {
     public List<GameObject> fishPrefabs;
     public Transform fishingZone;
-    public Transform holdableFishSpawn;
-    public FishUI fishUI;
     
     private float zoneWidth;
     private float zoneHeight;
 
     public float spawnInterval = 3f;
-    public int maxFish = 5;
-    private float zoneRadius;
+    public int maxFish = 7;
 
     void Start()
     {
@@ -37,14 +34,11 @@ public class FishingZoneScript : MonoBehaviour
 
         // Ensure the fish faces -X at spawn
         newFish.transform.rotation = Quaternion.Euler(0, 90, 0);
-
-        newFish.AddComponent<SwimmingFish>();
     }
 
     public void OnFishCaught(GameObject fish, GameObject spawnedFish)
     {
         Destroy(fish);
-        fishUI.UpdateFish();
         FindFirstObjectByType<HandController>().EquipObject(spawnedFish);
     }
 }

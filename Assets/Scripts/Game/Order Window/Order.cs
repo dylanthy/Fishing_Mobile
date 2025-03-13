@@ -5,50 +5,69 @@ public class Order : MonoBehaviour
 {
     public bool orderAnyFish;
     public int orderFishNumber;
-
+    public float orderTime;
+    public float remainingOrderTime;
 
     public void Init() // 75 % chance for a random fish order , 25% chance for a "specific" fish order
     {
-        orderAnyFish = Random.value <.75f;
-        if(!orderAnyFish)
+        orderAnyFish = Random.value < .75f;
+        if (!orderAnyFish)
         {
-            orderFishNumber = Random.Range(0,4);
+            orderFishNumber = Random.Range(0, 4);
         }
         else // random quantity of fish, 93% chance they want 1 fish, 7% chance they want 2
         {
             orderFishNumber = (Random.value < .93f) ? 1 : 2;
         }
+        remainingOrderTime = orderTime;
     }
+
+    void Update()
+    {
+        if (remainingOrderTime > 0)
+        {
+            remainingOrderTime -= Time.deltaTime;
+            if (remainingOrderTime <= 0)
+            {
+                // Order failed, handle accordingly
+                Destroy(gameObject);
+            }
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Cookable" && other.GetComponent<ItemCooker>().isCooked && !other.GetComponent<ItemCooker>().isBurned)
-            if(orderAnyFish)
+        if (other.gameObject.tag == "Cookable" && other.GetComponent<ItemCooker>().isCooked && !other.GetComponent<ItemCooker>().isBurned)
+        {
+            if (orderAnyFish)
             {
-                if(orderFishNumber >= 0)
+                if (orderFishNumber >= 0)
                 {
-                    orderFishNumber --;
-                    if(orderFishNumber <= 0)
+                    orderFishNumber--;
+                    if (orderFishNumber <= 0)
                     {
                         OrderCompleted(other.gameObject);
                     }
                     else
-                        //Accept item, still not complete
+                    {
+                        // Accept item, still not complete
                         GetComponent<CustomerMovement>().SayOrder();
+                    }
                 }
                 else
                 {
                     OrderCompleted(other.gameObject);
-
                 }
             }
             else
             {
-                if(orderFishNumber == other.GetComponent<ItemCooker>().fishIdentifier)
+                if (orderFishNumber == other.GetComponent<ItemCooker>().fishIdentifier)
                 {
                     OrderCompleted(other.gameObject);
                 }
-                //not correct item, ignore
+                // not correct item, ignore
             }
+        }
     }
 
     void OrderCompleted(GameObject dishThatCollided)

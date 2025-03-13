@@ -1,67 +1,107 @@
 using TMPro;
-using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine;
 
 public class OrdersUI : MonoBehaviour
 {
-    public Button isOpenToggle;
-    public RectTransform orderTimer;
-    public RectTransform happiness;
-    public TextMeshProUGUI money;
+    private static OrdersUI instance;
+    public static OrdersUI Instance
+    {
+        get { return instance; }
+    }
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        instance = this;
+    }
+    public TextMeshProUGUI dayCounterText;
+    public RectTransform dayTimerNeedle;
+    public RectTransform dayTimerBackground;
+    public RectTransform dayTimerForeground;
+    public TextMeshProUGUI isOpenText;
 
-    private OrderManager myOrderManager;
-    private float initialWidth; // Stores the original width of orderTimer
+    [Header("Order1")]
+    public TextMeshProUGUI orderNumber_1;
+    public Image item1_1;
+    public Image item2_1;
+    public GameObject plus_1;
+    public RectTransform timerFill_1;
+    public RectTransform timerBackground_1;
+    public RectTransform order1Panel_1;
+    [Header("Order2")]
+    public TextMeshProUGUI orderNumber_2;
+    public Image item1_2;
+    public Image item2_2;
+    public GameObject plus_2;
+    public RectTransform timerFill_2;
+    public RectTransform timerBackground_2;
+    public RectTransform order1Panel_2;
+    [Header("Order3")]
+    public TextMeshProUGUI orderNumber_3;
+    public Image item1_3;
+    public Image item2_3;
+    public GameObject plus_3;
+    public RectTransform timerFill_3;
+    public RectTransform timerBackground_3;
+    public RectTransform order1Panel_3;
+    public int day = 1;
 
     void Start()
     {
-        myOrderManager = FindFirstObjectByType<OrderManager>();
-        OpenToggle();
-
-        // Store the initial width of the orderTimer UI element
-        initialWidth = orderTimer.sizeDelta.x;
+        dayCounterText.text = $"Day: {day}";
+        float openTime = OrderManager.Instance.openTime;
+        float closeTime = OrderManager.Instance.closeTime;
+        float totalDuration = OrderManager.Instance.dayDuration;
+        dayTimerForeground.offsetMin = new Vector2(dayTimerBackground.rect.width * (openTime / totalDuration), dayTimerForeground.offsetMin.y);
+        dayTimerForeground.offsetMax = new Vector2(-dayTimerBackground.rect.width * (1 - closeTime / totalDuration), dayTimerForeground.offsetMax.y);
     }
 
-    void Update()
+    public void Update()
     {
-        UpdateOrderTimerWidth();
-        UpdateHappinessWidth();
-        UpdateCurrency();
+        dayCounterText.text = $"Day: {day}";
+        UpdateDayTimer();
     }
 
-    public void OpenToggle()
+
+    void UpdateDayTimer()
     {
-        TextMeshProUGUI buttonText = isOpenToggle.GetComponentInChildren<TextMeshProUGUI>();
-        if (buttonText != null)
+        if(OrderManager.Instance.isOpen)
         {
-            buttonText.text = myOrderManager.isOpen ? "Currently Open" : "Currently Closed";
+            isOpenText.text = "Open";
+            isOpenText.color = Color.green;
+        }
+        else
+        {
+            isOpenText.text = "Closed";
+            isOpenText.color = Color.red;
+        }
+        float normalizedTime = OrderManager.Instance.currentTime / OrderManager.Instance.dayDuration;
+        float leftBound = dayTimerBackground.rect.xMin;
+        float rightBound = dayTimerBackground.rect.xMax;
+        dayTimerNeedle.anchoredPosition = new Vector2(Mathf.Lerp(leftBound, rightBound, normalizedTime), dayTimerNeedle.anchoredPosition.y);
+    }
+
+    public void DisplayOrder(Order order)
+    {
+        if (order.orderAnyFish)
+        {
+            if (order.orderFishNumber == 1)
+            {
+                Debug.Log("Customer wants 1 fish");
+            }
+            else
+            {
+                Debug.Log($"Customer wants {order.orderFishNumber} fish");
+            }
+        }
+        else
+        {
+            Debug.Log($"Customer wants a specific fish: {order.orderFishNumber}");
         }
     }
 
-    private void UpdateOrderTimerWidth()
-    {
-        if (orderTimer != null)
-        {
-            // Get the percentage of time remaining
-            float percentage = Mathf.Clamp01(myOrderManager.remainingTimeBetweenCustomers / myOrderManager.timeBetweenCustomers);
-
-            // Update the width of the orderTimer based on the percentage
-            orderTimer.sizeDelta = new Vector2(initialWidth * percentage, orderTimer.sizeDelta.y);
-        }
-    }
-    private void UpdateHappinessWidth()
-    {
-        if (happiness != null)
-        {
-            // Get the percentage of time remaining
-            float percentage = Mathf.Clamp01(myOrderManager.remainingHappiness / myOrderManager.totalHappiness);
-
-            // Update the width of the orderTimer based on the percentage
-            happiness.sizeDelta = new Vector2(initialWidth * percentage, happiness.sizeDelta.y);
-        }
-    }
-
-    void UpdateCurrency()
-    {
-        money.text = $"${myOrderManager.currency}";
-    }
 }

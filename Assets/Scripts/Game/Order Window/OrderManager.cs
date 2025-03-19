@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class OrderManager : MonoBehaviour
@@ -19,34 +17,29 @@ public class OrderManager : MonoBehaviour
         }
         instance = this;
     }
-
     public int currency = 25;
     public float timeBetweenCustomers = 15f;
+    public float timeBetweenCustomersMin = 5f;
     public float remainingTimeBetweenCustomers = 0f;
-
-    public float totalHappiness = 100f;
-
-    public float remainingHappiness;
-    public float happinessLossPerSecond = .5f;
     public bool isOpen = false;
     public GameObject customerPrefab;
 
     [Header("Transforms")]
     public Transform customerSpawnPoint;
     public Transform orderPoint1;
-    public bool p1Occupied;
+    public bool p1Occupied = false;
     public Transform orderPoint2;
-    public bool p2Occupied;
+    public bool p2Occupied = false;
     public Transform orderPoint3;
-    public bool p3Occupied;
+    public bool p3Occupied = false;
     public float openTime = 10f; // 10 seconds
     public float closeTime = 240f; // 4 minutes in seconds
     public float dayDuration = 300f; // 5 minutes in seconds
     public float currentTime;
+    private int currentOrder = 1;
 
     void Start()
     {
-        remainingHappiness = totalHappiness;
         currentTime = 0f;
         if (closeTime > dayDuration)
         {
@@ -83,7 +76,7 @@ public class OrderManager : MonoBehaviour
                 }
                 else
                 {
-                    // No room for customers
+                    remainingTimeBetweenCustomers = timeBetweenCustomersMin;
                 }
             }
             else
@@ -96,9 +89,11 @@ public class OrderManager : MonoBehaviour
     private void CreateCustomer()
     {
         Transform myOrderPoint = null;
+        int myOrderPointInt = 0;
         if (!p1Occupied)
         {
             myOrderPoint = orderPoint1;
+            myOrderPointInt = 2;
             p1Occupied = true;
         }
         else
@@ -107,17 +102,24 @@ public class OrderManager : MonoBehaviour
             if (mySpawn == 0 && !p2Occupied)
             {
                 myOrderPoint = orderPoint2;
+                myOrderPointInt = 1;
                 p2Occupied = true;
             }
             else if (!p3Occupied)
             {
                 myOrderPoint = orderPoint3;
+                myOrderPointInt = 3;
                 p3Occupied = true;
             }
         }
+        if(myOrderPoint == null)
+        {
+            return;
+        }
         GameObject myCustomer = Instantiate(customerPrefab, customerSpawnPoint);
-        myCustomer.GetComponent<Order>().Init();
-        myCustomer.GetComponent<CustomerMovement>().Init(myOrderPoint, gameObject);
+        myCustomer.GetComponent<Order>().Init(currentOrder);
+        myCustomer.GetComponent<CustomerMovement>().Init(myOrderPoint, gameObject, myOrderPointInt);
+        currentOrder++;
     }
 
     public void ResetOrderPoint(Transform myOrderPoint)
@@ -125,17 +127,14 @@ public class OrderManager : MonoBehaviour
         if (myOrderPoint == orderPoint1)
         {
             p1Occupied = false;
-            remainingHappiness += 10f;
         }
         else if (myOrderPoint == orderPoint2)
         {
             p2Occupied = false;
-            remainingHappiness += 10f;
         }
         else if (myOrderPoint == orderPoint3)
         {
             p3Occupied = false;
-            remainingHappiness += 10f;
         }
     }
 }

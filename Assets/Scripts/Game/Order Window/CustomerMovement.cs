@@ -5,28 +5,30 @@ public class CustomerMovement : MonoBehaviour
 {
     public float walkSpeed;
     public Transform orderPoint;
-    private GameObject orderManager;
     public GameObject[] fishSpeech;
-
     public GameObject speechBubble;
     public TextMeshPro text;
     public GameObject dishParent;
-
+    private Order myOrder;
     private bool hasOrderedOnce = false;
+    public int myOrderSpot;
 
-    public void Init(Transform orderPoint, GameObject orderManager)
+    public void Init(Transform orderPoint, GameObject orderManager, int orderSpot)
     {
         this.orderPoint = orderPoint;
-        this.orderManager = orderManager;
+        myOrder = GetComponent<Order>();
+        myOrderSpot = orderSpot;
     }
 
     void Update()
     {
-        if (!orderPoint)
-            Debug.LogWarning("NoOrderPoint");
         transform.position = Vector3.Lerp(transform.position, orderPoint.position, Time.deltaTime * walkSpeed);
         if (Vector3.Distance(transform.position, orderPoint.position) < 0.1f)
+        if(!hasOrderedOnce)
+        {
             SayOrder();
+            GetComponent<Order>().ordered = true;
+        }
     }
 
     public void SayOrder()
@@ -52,22 +54,6 @@ public class CustomerMovement : MonoBehaviour
                 hasOrderedOnce = true;
             }
         }
-
-        // Update the timer display
-        float remainingTime = order.remainingOrderTime;
-        float totalTime = order.orderTime;
-        float percentage = remainingTime / totalTime;
-        if (percentage < 0.33f)
-        {
-            // Set health bar to red
-        }
-        else if (percentage < 0.66f)
-        {
-            // Set health bar to yellow
-        }
-        else
-        {
-            // Set health bar to green
-        }
+        OrdersUI.Instance.DisplayOrder(myOrder, myOrderSpot);
     }
 }

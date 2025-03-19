@@ -5,10 +5,12 @@ public class Order : MonoBehaviour
 {
     public bool orderAnyFish;
     public int orderFishNumber;
-    public float orderTime;
+    public float orderTime = 35f;
     public float remainingOrderTime;
+    public bool ordered = false;
+    public int myTicketNumber;
 
-    public void Init() // 75 % chance for a random fish order , 25% chance for a "specific" fish order
+    public void Init(int ticketNum) // 75 % chance for a random fish order , 25% chance for a "specific" fish order
     {
         orderAnyFish = Random.value < .75f;
         if (!orderAnyFish)
@@ -20,16 +22,19 @@ public class Order : MonoBehaviour
             orderFishNumber = (Random.value < .93f) ? 1 : 2;
         }
         remainingOrderTime = orderTime;
+        myTicketNumber = ticketNum;
     }
 
     void Update()
     {
-        if (remainingOrderTime > 0)
+        if (ordered)
         {
+            OrdersUI.Instance.UpdateOrderTimer(GetComponent<CustomerMovement>().myOrderSpot, remainingOrderTime / orderTime);
             remainingOrderTime -= Time.deltaTime;
             if (remainingOrderTime <= 0)
             {
-                // Order failed, handle accordingly
+                FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
+                OrderFailed();
                 Destroy(gameObject);
             }
         }
@@ -50,7 +55,6 @@ public class Order : MonoBehaviour
                     }
                     else
                     {
-                        // Accept item, still not complete
                         GetComponent<CustomerMovement>().SayOrder();
                     }
                 }
@@ -65,7 +69,6 @@ public class Order : MonoBehaviour
                 {
                     OrderCompleted(other.gameObject);
                 }
-                // not correct item, ignore
             }
         }
     }
@@ -74,6 +77,14 @@ public class Order : MonoBehaviour
     {
         FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
         Destroy(dishThatCollided);
+        OrdersUI.Instance.ResetOrderPanel(GetComponent<CustomerMovement>().myOrderSpot);
+        Destroy(gameObject);
+    }
+
+    private void OrderFailed()
+    {
+        FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
+        OrdersUI.Instance.ResetOrderPanel(GetComponent<CustomerMovement>().myOrderSpot);
         Destroy(gameObject);
     }
 }

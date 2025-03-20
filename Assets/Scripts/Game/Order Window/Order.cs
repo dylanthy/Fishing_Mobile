@@ -30,7 +30,7 @@ public class Order : MonoBehaviour
         if (ordered)
         {
             OrdersUI.Instance.UpdateOrderTimer(GetComponent<CustomerMovement>().myOrderSpot, remainingOrderTime / orderTime);
-            remainingOrderTime -= Time.deltaTime;
+            remainingOrderTime -= Time.deltaTime * OrderManager.Instance.timeMultiplier;
             if (remainingOrderTime <= 0)
             {
                 FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
@@ -77,6 +77,7 @@ public class Order : MonoBehaviour
     {
         FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
         Destroy(dishThatCollided);
+        OrderManager.Instance.AddToScore(GetComponent<CustomerMovement>().myOrderSpot);
         OrdersUI.Instance.ResetOrderPanel(GetComponent<CustomerMovement>().myOrderSpot);
         Destroy(gameObject);
     }
@@ -85,6 +86,7 @@ public class Order : MonoBehaviour
     {
         FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
         OrdersUI.Instance.ResetOrderPanel(GetComponent<CustomerMovement>().myOrderSpot);
+        OrderManager.Instance.SubtractFromScore(GetComponent<CustomerMovement>().myOrderSpot);
         Destroy(gameObject);
     }
 }

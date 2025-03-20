@@ -17,7 +17,6 @@ public class OrderManager : MonoBehaviour
         }
         instance = this;
     }
-    public int currency = 25;
     public float timeBetweenCustomers = 15f;
     public float timeBetweenCustomersMin = 5f;
     public float remainingTimeBetweenCustomers = 0f;
@@ -37,9 +36,16 @@ public class OrderManager : MonoBehaviour
     public float dayDuration = 300f; // 5 minutes in seconds
     public float currentTime;
     private int currentOrder = 1;
+    public float storeScore = 5f;
+    public float storeScoreMax = 5f;
+    public float storeScoreMin = 0f;
+    public float storeScoreDecay = -0.1f;
+    public float storeScoreIncrease = 0.1f;
+    public float timeMultiplier = 1f;
 
     void Start()
     {
+        storeScore = storeScoreMax;
         currentTime = 0f;
         if (closeTime > dayDuration)
         {
@@ -50,7 +56,7 @@ public class OrderManager : MonoBehaviour
 
     void Update()
     {
-        currentTime += Time.deltaTime;
+        currentTime += Time.deltaTime * timeMultiplier;
         if (currentTime >= dayDuration)
         {
             currentTime = 0f;
@@ -136,5 +142,26 @@ public class OrderManager : MonoBehaviour
         {
             p3Occupied = false;
         }
+    }
+
+    public void AddToScore(int orderSpot)
+    {
+        storeScore += storeScoreIncrease;
+        if (storeScore > storeScoreMax)
+        {
+            storeScore = storeScoreMax;
+            return;
+        }
+        OrdersUI.Instance.SpawnScoreChangeText(storeScoreIncrease, orderSpot);
+    }
+    public void SubtractFromScore(int orderSpot)
+    {
+        storeScore += storeScoreDecay;
+        if (storeScore < storeScoreMin)
+        {
+            storeScore = storeScoreMin;
+            return;
+        }
+        OrdersUI.Instance.SpawnScoreChangeText(storeScoreDecay, orderSpot);
     }
 }

@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
+using NUnit.Framework.Internal;
+using System.Collections;
 
 public class OrdersUI : MonoBehaviour
 {
@@ -39,7 +41,6 @@ public class OrdersUI : MonoBehaviour
     public RawImage item2_2;
     public GameObject plus_2;
     public TextMeshProUGUI anyFish_2;
-
     public RectTransform timerFill_2;
     public RectTransform timerBackground_2;
     public RectTransform orderPanel_2;
@@ -49,15 +50,24 @@ public class OrdersUI : MonoBehaviour
     public RawImage item2_3;
     public GameObject plus_3;
     public TextMeshProUGUI anyFish_3;
-
     public RectTransform timerFill_3;
     public RectTransform timerBackground_3;
     public RectTransform orderPanel_3;
     public int day = 1;
     public Texture[] fishSprites;
+    [Header("Restaurant Score")]
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI scoreIncreaseText;
+    public RectTransform scoreTextTransform1;
+    public RectTransform scoreTextTransform2;
+    public RectTransform scoreTextTransform3;
+    public TextMeshProUGUI scoreDecreaseText;
+    public float scoreChangeDuration = 0.5f;
+    public int scoreChangeHeight = 50;
 
     void Start()
     {
+        scoreText.text = $"{OrderManager.Instance.storeScore}/ 5";
         dayCounterText.text = $"Day: {day}";
         float openTime = OrderManager.Instance.openTime;
         float closeTime = OrderManager.Instance.closeTime;
@@ -174,6 +184,7 @@ public class OrdersUI : MonoBehaviour
                 break;
         }
         orderPanel.gameObject.SetActive(false);
+        scoreText.text = $"{OrderManager.Instance.storeScore}/ 5";
     }
 
     public void UpdateOrderTimer(int orderSpot, float timeTotal)
@@ -198,5 +209,52 @@ public class OrdersUI : MonoBehaviour
         float fullWidth = timerBackground.rect.width;
         timerFill.sizeDelta = new Vector2(fullWidth * timeTotal, timerBackground.rect.height);
         timerFill.GetComponent<Image>().color = Color.Lerp(Color.red, Color.green, timeTotal);
+    }
+    public void SpawnScoreChangeText(float scoreChange, int orderSpot)
+    {
+        TextMeshProUGUI scoreChangeText = scoreChange > 0 ? scoreIncreaseText : scoreDecreaseText;
+        RectTransform targetTransform = null;
+        switch (orderSpot)
+        {
+            case 1:
+                targetTransform = scoreTextTransform1;
+                break;
+            case 2:
+                targetTransform = scoreTextTransform2;
+                break;
+            case 3:
+                targetTransform = scoreTextTransform3;
+                break;
+        }
+        Debug.Log($"Target transform: {targetTransform}");
+        if (targetTransform != null)
+        {
+            scoreChangeText.color = scoreChange > 0 ? Color.green : Color.red;
+            scoreChangeText.rectTransform.position = targetTransform.position;
+            StartCoroutine(AnimateScoreText(scoreChangeText, targetTransform));
+        }
+    }
+
+    private IEnumerator AnimateScoreText(TextMeshProUGUI textObject, RectTransform targetTransform)
+    {
+        TextMeshProUGUI spawnedText = Instantiate(textObject, targetTransform.position, Quaternion.identity, transform);
+        spawnedText.gameObject.SetActive(true);
+        float elapsedTime = 0f;
+        Vector2 startPos = spawnedText.rectTransform.anchoredPosition;
+        Vector2 endPos = startPos + new Vector2(0, scoreChangeHeight);
+        float duration = scoreChangeDuration;
+        
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+            spawnedText.rectTransform.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
+            // Fade out
+            Color textColor = spawnedText.color;
+            textColor.a = 1 - t;
+            spawnedText.color = textColor;
+            yield return null;
+        }
+        Destroy(spawnedText.gameObject);
     }
 }

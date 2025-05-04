@@ -68,7 +68,7 @@ public class OrdersUI : MonoBehaviour
     void Start()
     {
         scoreText.text = $"{OrderManager.Instance.storeScore}/ 5";
-        dayCounterText.text = $"Day: {day}";
+        dayCounterText.text = $"${OrderManager.Instance.currentBalance} - Day: {day}";
         float openTime = OrderManager.Instance.openTime;
         float closeTime = OrderManager.Instance.closeTime;
         float totalDuration = OrderManager.Instance.dayDuration;
@@ -81,7 +81,7 @@ public class OrdersUI : MonoBehaviour
 
     public void Update()
     {
-        dayCounterText.text = $"Day: {day}";
+        dayCounterText.text = $"${OrderManager.Instance.currentBalance} - Day: {day}";
         UpdateDayTimer();
     }
 

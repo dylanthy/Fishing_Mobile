@@ -152,14 +152,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbc6a772ccad2ce46b80d4294a4433e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBeingUsed: 0
   fishIdentifier: 1
-  cookTime: 5
-  burnTime: 8
+  cookTime: 10
+  burnTime: 12
   cookedMaterial: {fileID: 2100000, guid: c39ea2f66a848c043ae7005709261cac, type: 2}
   burnedMaterial: {fileID: 2100000, guid: 357a00282c8dc95438ffe56fac365bc3, type: 2}
   isCooked: 0
   isBurned: 0
-  tempVarHasBeenStarted: 0
+  cookedSound: {fileID: 8300000, guid: 443361c14b0b8334f95a6d51e3f6f4e5, type: 3}
+  burnedSound: {fileID: 8300000, guid: 443361c14b0b8334f95a6d51e3f6f4e5, type: 3}
 --- !u!114 &-5372297204294054511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,13 +189,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7103ade61c454343b9b2841353d568b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackingTime: 5
+  maxThrowVelocity: 50
+  minThrowVelocity: 1
+  returnTime: 2
+  targetAngle: 45
   targetLayer:
     serializedVersion: 2
     m_Bits: 24
-  lerpSpeed: 10
-  throwThreshold: 0.03
-  throwForceMultiplier: 8
-  maxFrameTrackingTime: 2
-  returnTime: 2
-  fishUI: {fileID: 0}
-  throwAngle: {x: 20, y: 50}
+  handController: {fileID: 0}
+  averageVelocity: {x: 0, y: 0, z: 0}

@@ -7,6 +7,7 @@ TagManager:
   - FishingBob
   - Cookable
   - Pan
+  - RareFish
   layers:
   - Default
   - TransparentFX

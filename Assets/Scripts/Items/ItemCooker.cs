@@ -12,6 +12,8 @@ public class ItemCooker : MonoBehaviour
     public bool isCooked = false;
     public bool isBurned = false;
     private GameObject parentPan;
+    public AudioClip cookedSound;
+    public AudioClip burnedSound;
     public void Init(GameObject pan)
     {  
         parentPan = pan;
@@ -29,6 +31,7 @@ public class ItemCooker : MonoBehaviour
         if(!isCooked)
         {
             Renderer renderer = GetComponent<Renderer>();
+            AudioSource.PlayClipAtPoint(cookedSound, transform.position);
             renderer.material = cookedMaterial;
             isCooked = true;
             StartCoroutine(CookOverTime(burnTime));
@@ -37,6 +40,7 @@ public class ItemCooker : MonoBehaviour
         {
             isBurned = true;
             Renderer renderer = GetComponent<Renderer>();
+            AudioSource.PlayClipAtPoint(burnedSound, transform.position);
             renderer.material = burnedMaterial;
         }
     }

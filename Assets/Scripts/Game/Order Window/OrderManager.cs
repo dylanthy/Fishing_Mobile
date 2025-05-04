@@ -42,6 +42,7 @@ public class OrderManager : MonoBehaviour
     public float storeScoreDecay = -0.1f;
     public float storeScoreIncrease = 0.1f;
     public float timeMultiplier = 1f;
+    public int currentBalance = 0;
 
     void Start()
     {

@@ -16,7 +16,6 @@ public class SwimmingFish : MonoBehaviour
     public float maxSpeed = 3f;
     public float minTurnSpeed = 2f;
     public float maxTurnSpeed = 5f;
-    public GameObject myHoldableFish;
 
     // Distance multipliers
     public float closeDistanceFactor = 0.3f;  // 30% of the total zone size for close distances
@@ -85,7 +84,8 @@ public class SwimmingFish : MonoBehaviour
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            targetRotation *= Quaternion.Euler(0, 90, 0); // Offset so fish faces forward correctly
+            if(gameObject.tag != "RareFish")
+                targetRotation *= Quaternion.Euler(0, 90, 0); // Offset so fish faces forward correctly
             
             // Lock the X-axis to 90 degrees
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);

@@ -1,14 +1,11 @@
 using UnityEngine;
 
-public class ActiveFishScript : MonoBehaviour
+public class NightFishScript : MonoBehaviour
 {
     public GameObject myHoldableFish;
-    public int myNumber;
 
     public void Start()
     {
-        Destroy(gameObject, 10f);
-        myNumber = myHoldableFish.GetComponent<ItemCooker>().fishIdentifier;
     }
     private void OnTriggerEnter(Collider other)
     {

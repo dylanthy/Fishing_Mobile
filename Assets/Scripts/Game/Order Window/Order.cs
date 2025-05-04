@@ -6,16 +6,27 @@ public class Order : MonoBehaviour
     public bool orderAnyFish;
     public int orderFishNumber;
     public float orderTime = 35f;
+    public float positiveReceiveTime = 15f;
     public float remainingOrderTime;
+    public bool isWithinPositiveReceiveTime = true;
     public bool ordered = false;
     public int myTicketNumber;
+    public int baseOrderValue = 2;
+    public int tipValue = 1;
+    public int totalOrderValue;
 
     public void Init(int ticketNum) // 75 % chance for a random fish order , 25% chance for a "specific" fish order
     {
         orderAnyFish = Random.value < .75f;
         if (!orderAnyFish)
         {
-            orderFishNumber = Random.Range(0, 4);
+            List<int> currentFishPool = new List<int>();
+            foreach(GameObject fish in DayPondManager.I.dayFishPrefabs)
+            {
+                currentFishPool.Add(fish.GetComponent<ActiveFishScript>().myHoldableFish.GetComponent<ItemCooker>().fishIdentifier);
+            }
+            
+            orderFishNumber = currentFishPool[Random.Range(0, currentFishPool.Count)];
         }
         else // random quantity of fish, 93% chance they want 1 fish, 7% chance they want 2
         {
@@ -23,6 +34,7 @@ public class Order : MonoBehaviour
         }
         remainingOrderTime = orderTime;
         myTicketNumber = ticketNum;
+        totalOrderValue = baseOrderValue;
     }
 
     void Update()
@@ -31,6 +43,12 @@ public class Order : MonoBehaviour
         {
             OrdersUI.Instance.UpdateOrderTimer(GetComponent<CustomerMovement>().myOrderSpot, remainingOrderTime / orderTime);
             remainingOrderTime -= Time.deltaTime * OrderManager.Instance.timeMultiplier;
+            if(remainingOrderTime >= positiveReceiveTime)
+            {
+                isWithinPositiveReceiveTime = true;
+            }
+            else
+                isWithinPositiveReceiveTime = false;
             if (remainingOrderTime <= 0)
             {
                 FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
@@ -77,7 +95,12 @@ public class Order : MonoBehaviour
     {
         FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
         Destroy(dishThatCollided);
-        OrderManager.Instance.AddToScore(GetComponent<CustomerMovement>().myOrderSpot);
+        if(isWithinPositiveReceiveTime)
+        {
+            totalOrderValue += tipValue;
+            OrderManager.Instance.AddToScore(GetComponent<CustomerMovement>().myOrderSpot);
+        }
+        OrderManager.Instance.currentBalance += totalOrderValue;
         OrdersUI.Instance.ResetOrderPanel(GetComponent<CustomerMovement>().myOrderSpot);
         Destroy(gameObject);
     }

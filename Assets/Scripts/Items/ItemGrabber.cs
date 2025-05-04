@@ -26,7 +26,15 @@ public class ItemGrabber : MonoBehaviour
         int bitMask = 1 << layerMask; // Convert layer to bitmask
         if (Physics.Raycast(ray, out RaycastHit hit, 20f, bitMask) && hit.transform == transform)
         {
-            EquipItem();
+            if(hit.transform.CompareTag("RareFish"))
+            {
+                EquipItem();
+                hit.transform.GetComponent<RareFishManager>().myDisplay.GetComponent<FishDisplays>().ResetDisplay();
+            }
+            else
+            {
+                EquipItem();
+            }
         }
     }
 

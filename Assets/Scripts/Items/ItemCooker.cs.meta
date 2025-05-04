@@ -1,2 +1,15 @@
 fileFormatVersion: 2
 guid: dbc6a772ccad2ce46b80d4294a4433e2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - cookedMaterial: {instanceID: 0}
+  - burnedMaterial: {instanceID: 0}
+  - cookedSound: {fileID: 8300000, guid: 443361c14b0b8334f95a6d51e3f6f4e5, type: 3}
+  - burnedSound: {fileID: 8300000, guid: 443361c14b0b8334f95a6d51e3f6f4e5, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

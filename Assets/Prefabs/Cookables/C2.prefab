@@ -196,6 +196,6 @@ MonoBehaviour:
   targetAngle: 45
   targetLayer:
     serializedVersion: 2
-    m_Bits: 24
+    m_Bits: 8
   handController: {fileID: 0}
   averageVelocity: {x: 0, y: 0, z: 0}

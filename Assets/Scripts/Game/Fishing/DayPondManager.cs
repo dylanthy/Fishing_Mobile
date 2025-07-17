@@ -21,6 +21,7 @@ public class DayPondManager : MonoBehaviour
     public List<GameObject> dayFishPrefabs;
     public List<GameObject> nightFishPrefabs;
     public List<GameObject> activeFish = new List<GameObject>();
+    public List<GameObject> neededFish = new List<GameObject>(); //Any fish needed to fulfill an order
     public Transform fishingZone;
     private float zoneWidth;
     private float zoneHeight;

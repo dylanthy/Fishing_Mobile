@@ -14,19 +14,27 @@ public class Order : MonoBehaviour
     public int baseOrderValue = 2;
     public int tipValue = 1;
     public int totalOrderValue;
+    public int mySpotInNeededFishList = -1; // -1 means not in the list, otherwise it's the index in the neededFish list
+    public List<int> currentFishPool = new List<int>();
 
     public void Init(int ticketNum) // 75 % chance for a random fish order , 25% chance for a "specific" fish order
     {
-        orderAnyFish = Random.value < .75f;
+        orderAnyFish = Random.value < .01f;
         if (!orderAnyFish)
         {
-            List<int> currentFishPool = new List<int>();
-            foreach(GameObject fish in DayPondManager.I.dayFishPrefabs)
+            foreach (GameObject fish in DayPondManager.I.activeFish)
             {
-                currentFishPool.Add(fish.GetComponent<ActiveFishScript>().myHoldableFish.GetComponent<ItemCooker>().fishIdentifier);
+                if (fish.GetComponent<ActiveFishScript>().myHoldableFish != null && !currentFishPool.Contains(fish.GetComponent<ActiveFishScript>().myHoldableFish.GetComponent<ItemCooker>().fishIdentifier))
+                {
+                    currentFishPool.Add(fish.GetComponent<ActiveFishScript>().myHoldableFish.GetComponent<ItemCooker>().fishIdentifier);
+                }
             }
-            
+
             orderFishNumber = currentFishPool[Random.Range(0, currentFishPool.Count)];
+            DayPondManager.I.neededFish.Add(DayPondManager.I.dayFishPrefabs[orderFishNumber]);
+            mySpotInNeededFishList = DayPondManager.I.neededFish.Count - 1;
+
+            currentFishPool.Clear();
         }
         else // random quantity of fish, 93% chance they want 1 fish, 7% chance they want 2
         {
@@ -54,6 +62,8 @@ public class Order : MonoBehaviour
                 FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
                 OrderFailed();
                 Destroy(gameObject);
+                if(!orderAnyFish)
+                    DayPondManager.I.neededFish.RemoveAt(mySpotInNeededFishList);
             }
         }
     }
@@ -95,7 +105,7 @@ public class Order : MonoBehaviour
     {
         FindFirstObjectByType<OrderManager>().ResetOrderPoint(GetComponent<CustomerMovement>().orderPoint);
         Destroy(dishThatCollided);
-        if(isWithinPositiveReceiveTime)
+        if (isWithinPositiveReceiveTime)
         {
             totalOrderValue += tipValue;
             OrderManager.Instance.AddToScore(GetComponent<CustomerMovement>().myOrderSpot);
@@ -103,6 +113,8 @@ public class Order : MonoBehaviour
         OrderManager.Instance.currentBalance += totalOrderValue;
         OrdersUI.Instance.ResetOrderPanel(GetComponent<CustomerMovement>().myOrderSpot);
         Destroy(gameObject);
+        if(!orderAnyFish)
+            DayPondManager.I.neededFish.RemoveAt(mySpotInNeededFishList);
     }
 
     private void OrderFailed()
@@ -111,5 +123,7 @@ public class Order : MonoBehaviour
         OrdersUI.Instance.ResetOrderPanel(GetComponent<CustomerMovement>().myOrderSpot);
         OrderManager.Instance.SubtractFromScore(GetComponent<CustomerMovement>().myOrderSpot);
         Destroy(gameObject);
+        if(!orderAnyFish)
+            DayPondManager.I.neededFish.RemoveAt(mySpotInNeededFishList);
     }
 }

@@ -8,7 +8,8 @@ public class ItemThrower : MonoBehaviour
     public float maxThrowVelocity = 50f;
     public float minThrowVelocity = 1f;
     public float returnTime = 2f;                 // Time after throw before destruction
-    public float targetAngle = 45f;               // Desired launch angle relative to horizontal
+    public float targetAngle = 45f;
+    public float holdDeadzone = .25f;             // Desired launch angle relative to horizontal
 
     [Header("References")]
     public LayerMask targetLayer;
@@ -31,6 +32,7 @@ public class ItemThrower : MonoBehaviour
 
     // For computing manual velocity while being held (kinematic)
     private Vector3 lastPosition;
+    
 
     /// <summary>
     /// Initializes the throwable with the hand side and hand location.
@@ -65,7 +67,7 @@ public class ItemThrower : MonoBehaviour
         // When equipped, check for mouse input to pick up or throw the item.
         if (isEquipped)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0)&& !isHoldingItem)
             {
                 TryPickUpItem();
             }
@@ -83,8 +85,8 @@ public class ItemThrower : MonoBehaviour
         // While holding, move the item to the cursor and track its movement.
         if (isHoldingItem)
         {
-            MoveItemToCursor();
             TrackMovement();
+            MoveItemToCursor();
         }
 
         // If the item is equipped but not yet thrown, smoothly move it to the hand position.
@@ -101,6 +103,10 @@ public class ItemThrower : MonoBehaviour
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, targetLayer))
+        {
+            transform.position = hit.point;
+        }
+        else if (Physics.Raycast(ray, out hit)) // Fallback if no specific layer is hit
         {
             transform.position = hit.point;
         }

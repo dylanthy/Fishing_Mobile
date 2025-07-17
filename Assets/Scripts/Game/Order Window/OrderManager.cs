@@ -17,9 +17,13 @@ public class OrderManager : MonoBehaviour
         }
         instance = this;
     }
-    public float timeBetweenCustomers = 15f;
-    public float timeBetweenCustomersMin = 5f;
-    public float remainingTimeBetweenCustomers = 0f;
+    public float timeBetweenCustomersDay = 15f;
+    public float timeBetweenCustomersMinDay = 5f;
+    public float remainingTimeBetweenCustomersDay = 0f;
+    public float timeBetweenCustomersNight = 35f;
+    public float timeBetweenCustomersMinNight = 15f;
+    public float remainingTimeBetweenCustomersNight = 0f;
+    public bool isDay = false;
     public bool isOpen = false;
     public GameObject customerPrefab;
 
@@ -31,9 +35,9 @@ public class OrderManager : MonoBehaviour
     public bool p2Occupied = false;
     public Transform orderPoint3;
     public bool p3Occupied = false;
-    public float openTime = 10f; // 10 seconds
-    public float closeTime = 240f; // 4 minutes in seconds
-    public float dayDuration = 300f; // 5 minutes in seconds
+    public float openTime = 180f; // 3 minutes in seconds
+    public float closeTime = 60f; // 1 minute in seconds
+    public float dayDuration = 240f; // 4 minutes in seconds
     public float currentTime;
     private int currentOrder = 1;
     public float storeScore = 5f;
@@ -57,6 +61,10 @@ public class OrderManager : MonoBehaviour
 
     void Update()
     {
+        if(!isOpen)
+        {
+            return;
+        }
         currentTime += Time.deltaTime * timeMultiplier;
         if (currentTime >= dayDuration)
         {
@@ -65,32 +73,85 @@ public class OrderManager : MonoBehaviour
         }
         if (currentTime >= closeTime)
         {
-            isOpen = false;
+            isDay = false;
         }
         else if (currentTime >= openTime)
         {
-            isOpen = true;
+            isDay = true;
         }
 
-        if (isOpen)
+        if (isDay)
         {
-            if (remainingTimeBetweenCustomers <= 0f)
+            if (remainingTimeBetweenCustomersDay <= 0f)
             {
                 if (!p1Occupied || !p2Occupied || !p3Occupied)
                 {
                     CreateCustomer();
-                    remainingTimeBetweenCustomers = timeBetweenCustomers;
+                    remainingTimeBetweenCustomersDay = timeBetweenCustomersDay;
                 }
                 else
                 {
-                    remainingTimeBetweenCustomers = timeBetweenCustomersMin;
+                    remainingTimeBetweenCustomersDay = timeBetweenCustomersMinDay;
                 }
             }
             else
             {
-                remainingTimeBetweenCustomers -= Time.deltaTime;
+                remainingTimeBetweenCustomersDay -= Time.deltaTime;
             }
         }
+        else
+        {
+            if (remainingTimeBetweenCustomersNight <= 0f)
+            {
+                if (!p1Occupied || !p2Occupied || !p3Occupied)
+                {
+                    CreateCustomer();
+                    remainingTimeBetweenCustomersNight = timeBetweenCustomersNight;
+                }
+                else
+                {
+                    remainingTimeBetweenCustomersNight = timeBetweenCustomersMinNight;
+                }
+            }
+            else
+            {
+                remainingTimeBetweenCustomersNight -= Time.deltaTime;
+            }
+        }
+
+    }
+    
+    public void ToggleRestaurantOpen()
+    {
+        if (isOpen)
+        {
+            CloseRestaurant();
+        }
+        else
+        {
+            OpenRestaurant();
+        }
+    }
+    private void OpenRestaurant()
+    {
+        isOpen = true;
+        currentTime = 0f;
+        OrdersUI.Instance.day = 1;
+        // OrdersUI.Instance.UpdateDayText();
+        // OrdersUI.Instance.UpdateScoreText();
+        // OrdersUI.Instance.UpdateBalanceText();
+        storeScore = storeScoreMax;
+        remainingTimeBetweenCustomersDay = timeBetweenCustomersDay;
+        remainingTimeBetweenCustomersNight = timeBetweenCustomersNight;
+    }
+    private void CloseRestaurant()
+    {
+        isOpen = false;
+        // OrdersUI.Instance.UpdateDayText();
+        // OrdersUI.Instance.UpdateScoreText();
+        // OrdersUI.Instance.UpdateBalanceText();
+        remainingTimeBetweenCustomersDay = 0f;
+        remainingTimeBetweenCustomersNight = 0f;
     }
 
     private void CreateCustomer()
@@ -119,7 +180,7 @@ public class OrderManager : MonoBehaviour
                 p3Occupied = true;
             }
         }
-        if(myOrderPoint == null)
+        if (myOrderPoint == null)
         {
             return;
         }

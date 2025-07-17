@@ -68,7 +68,7 @@ public class OrdersUI : MonoBehaviour
     void Start()
     {
         scoreText.text = $"{OrderManager.Instance.storeScore}/ 5";
-        dayCounterText.text = $"${OrderManager.Instance.currentBalance} - Day: {day}";
+        dayCounterText.text = $"Days Open: {day}\n${OrderManager.Instance.currentBalance}";
         float openTime = OrderManager.Instance.openTime;
         float closeTime = OrderManager.Instance.closeTime;
         float totalDuration = OrderManager.Instance.dayDuration;
@@ -81,22 +81,29 @@ public class OrdersUI : MonoBehaviour
 
     public void Update()
     {
-        dayCounterText.text = $"${OrderManager.Instance.currentBalance} - Day: {day}";
         UpdateDayTimer();
     }
 
 
     void UpdateDayTimer()
     {
-        if(OrderManager.Instance.isOpen)
+        if (OrderManager.Instance.isOpen)
         {
+            dayCounterText.text = $"Days Open: {day}\n${OrderManager.Instance.currentBalance}";
             isOpenText.text = "Open";
             isOpenText.color = Color.green;
+            dayTimerBackground.gameObject.SetActive(true);
+            dayTimerNeedle.gameObject.SetActive(true);
+            dayTimerForeground.gameObject.SetActive(true);
         }
         else
         {
+            dayCounterText.text = $"\n${OrderManager.Instance.currentBalance}";
             isOpenText.text = "Closed";
             isOpenText.color = Color.red;
+            dayTimerBackground.gameObject.SetActive(false);
+            dayTimerNeedle.gameObject.SetActive(false);
+            dayTimerForeground.gameObject.SetActive(false);
         }
         float normalizedTime = OrderManager.Instance.currentTime / OrderManager.Instance.dayDuration;
         float leftBound = dayTimerBackground.rect.xMin;

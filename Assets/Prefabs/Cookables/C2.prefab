@@ -194,6 +194,7 @@ MonoBehaviour:
   minThrowVelocity: 1
   returnTime: 2
   targetAngle: 45
+  holdDeadzone: 0.25
   targetLayer:
     serializedVersion: 2
     m_Bits: 8

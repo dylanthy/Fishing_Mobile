@@ -88,12 +88,6 @@ public class ItemThrower : MonoBehaviour
             TrackMovement();
             MoveItemToCursor();
         }
-
-        // If the item is equipped but not yet thrown, smoothly move it to the hand position.
-        if (!isThrown && isEquipped)
-        {
-            transform.position = Vector3.Lerp(transform.position, handLocation.position, 10f * Time.deltaTime);
-        }
     }
 
     /// <summary>
@@ -104,11 +98,12 @@ public class ItemThrower : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, targetLayer))
         {
-            transform.position = hit.point;
+            transform.position = hit.point + hit.normal * 0.01f;
+            
         }
         else if (Physics.Raycast(ray, out hit)) // Fallback if no specific layer is hit
         {
-            transform.position = hit.point;
+            transform.position = hit.point + hit.normal * 0.01f;
         }
     }
 

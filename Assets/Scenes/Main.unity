@@ -4749,6 +4749,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 856796599915495532, guid: 66046bcf8789f984faa7134a2fa4524a, type: 3}
+      propertyPath: timeBetweenCustomersDay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 856796599915495532, guid: 66046bcf8789f984faa7134a2fa4524a, type: 3}
       propertyPath: remainingTimeBetweenCustomersDay
       value: 1
       objectReference: {fileID: 0}

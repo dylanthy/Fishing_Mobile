@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBeingUsed: 0
-  fishIdentifier: 1
+  fishIdentifier: 0
   cookTime: 10
   burnTime: 12
   cookedMaterial: {fileID: 2100000, guid: c39ea2f66a848c043ae7005709261cac, type: 2}
@@ -194,6 +194,7 @@ MonoBehaviour:
   minThrowVelocity: 1
   returnTime: 2
   targetAngle: 45
+  holdDeadzone: 0.25
   targetLayer:
     serializedVersion: 2
     m_Bits: 8
